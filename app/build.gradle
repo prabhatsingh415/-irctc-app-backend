@@ -21,6 +21,14 @@ dependencies {
 
     // This dependency is used by the application.
     implementation libs.guava
+    implementation 'javax.mail:javax.mail-api:1.6.2'
+    implementation 'com.sun.mail:javax.mail:1.6.2'
+
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
+
+
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -33,4 +41,4 @@ java {
 application {
     // Define the main class for the application.
     mainClass = 'org.example.App'
-}
+
