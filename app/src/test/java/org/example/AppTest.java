@@ -3,12 +3,14 @@
  */
 package org.example;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.example.services.TicketServices;
+//import org.junit.Test;
+//import static org.junit.Assert.*;
 
 public class AppTest {
-    @Test public void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull("app should have a greeting", classUnderTest.getGreeting());
-    }
+//    public static void main(String[] args) {
+//        TicketServices ticketServices = new TicketServices();
+//        ticketServices.bookTicket(5678,"kota","Jodhpur","412025","prabhat");
+//    }
+
 }

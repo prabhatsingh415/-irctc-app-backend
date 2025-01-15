@@ -1,5 +1,6 @@
 package org.example.dataBase;
 
+import org.example.Utilities;
 import org.example.entities.User;
 import org.example.pages.HomePage;
 
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import static org.example.dataBase.DataBaseConfig.createConnection;
 
 public class UserDao {
+
     public void registerUser(User user) {
         String userName = user.getName();
         String userEmail = user.getMail();
@@ -42,15 +44,35 @@ public class UserDao {
                     preparedStatement.setString(3, userPassword);
                     preparedStatement.executeUpdate();
                     System.out.println("Sign Up Successfully!");
-                    homePage.displayHomePage(userName);
-                } else {
-                    // User exists
-                    System.out.println("Log In Successfully!");
-                    homePage.displayHomePage(userName);
+                    homePage.displayHomePage(userEmail);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean login(String email, String password) {
+        String hashedPassword = " ";
+
+        String query = "SELECT UserPassword FROM user WHERE UserEMAIL = ?";
+
+        try (Connection connection = createConnection()) {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+
+            if (!rs.next()) {
+                // No email found
+                System.out.println("Email not found");
+            } else {
+                // Password found
+                hashedPassword = rs.getString("UserPassword");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return Utilities.checkPassword(password, hashedPassword);
     }
 }

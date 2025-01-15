@@ -1,22 +1,16 @@
 package org.example.services;
 
 import io.github.cdimascio.dotenv.Dotenv;
-
-import jakarta.mail.*;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
-
-import java.util.Properties;
 import java.util.Random;
 
 public class VerificationEmail {
       int code = code();
 
     Dotenv dotenv = Dotenv.configure().directory("C:\\Users\\acer\\Irctc\\app\\.env").load();
-
+    String from = dotenv.get("EMAIL_USERNAME");
     public boolean sendEmail(String mail, String userName){
 
-        String from = dotenv.get("EMAIL_USERNAME");
+
         String subject = "Verification E-Mail";
         String message = "Dear " + userName +
                 ",\n\nWelcome to IRCTC Ticket Booking App! To complete your sign-up process, we just need to verify your email address. Here is your verification code: **" +
@@ -25,56 +19,36 @@ public class VerificationEmail {
                 "Thank you for joining us!\n" +
                 "Best regards,\n" +
                 "The IRCTC - Ticket Booking App Team\n" +
-                "Email :- v60871189@gmail.com \n";
-        return send(from, mail, subject, message);
+                "Email :- singh.prabhat.work@gmail.com\n";
+
+        EmailSender emailSender = new EmailSender(from);
+
+        return emailSender.sendEmail(mail, subject, message, null);
     }
 
-    private boolean send(String from, String to, String subject, String message) {
-        String host = "smtp.gmail.com";
-        Properties properties = System.getProperties();
-        properties.put("mail.smtp.host",host);
-        properties.put("mail.smtp.port","465");
-        properties.put("mail.smtp.ssl.enable","true");
-        properties.put("mail.smtp.auth","true");
+    public boolean sendTicket(String mail,String user,String path){
+        String subject = "Your Ticket Confirmation";
+                String message = "Dear " + user +
+                "\n" +
+                "Thank you for choosing our services. Please find your ticket details below:\n" +
+                "\n" +
+                "Your ticket is attached to this email. Kindly carry a printout or an electronic copy of it during your journey.\n" +
+                "\n" +
+                "If you have any questions or require further assistance, feel free to reach out to us.\n" +
+                "\n" +
+                "Safe travels!\n" +
+                "\n" +
+                "Best regards,\n" +
+                "Prabhat Singh\n" +
+                 "contact :- singh.prabhat.work@gmail.com" +
+                "IRCTC-TICKET_BOOKING_APP\n";
 
-        //App password
-        final String  appPassword = dotenv.get("EMAIL_APP_PASSWORD");
-        //Session object
-      Session session =  Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(from,appPassword);
-            }
-        });
-        session.setDebug(true);
+        EmailSender emailSender = new EmailSender(from);
 
-        MimeMessage message1 = new MimeMessage(session);
-
-
-        try {
-            //Sender
-            message1.setFrom(new InternetAddress(from));
-
-            //receiver
-            message1.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-
-             //Set Subject
-            message1.setSubject(subject);
-            //Message body
-            message1.setText(message);
-
-            //Send Email
-            Transport.send(message1);
-
-            System.out.println("Email sent successfully!");
-
-            return true;
-        } catch (MessagingException e) {
-            System.out.println("Error: Something went wrong!");
-            e.printStackTrace();
-        }
-      return false;
+        // Send the email with the attachment
+       return emailSender.sendEmail(mail, subject, message,path);
     }
+
 
     private  int code(){
         Random random = new Random();

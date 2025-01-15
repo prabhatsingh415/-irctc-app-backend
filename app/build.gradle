@@ -21,6 +21,11 @@ dependencies {
 
     // This dependency is used by the application.
     implementation libs.guava
+    implementation 'com.sun.mail:jakarta.mail:2.0.1' // Ensure you're using the latest version
+    implementation 'jakarta.activation:jakarta.activation-api:1.2.2' // Ensure compatibility
+    implementation 'mysql:mysql-connector-java:8.0.14'
+    implementation group: 'io.github.cdimascio', name: 'dotenv-java', version: '3.0.2'
+    implementation 'org.mindrot:jbcrypt:0.4'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
