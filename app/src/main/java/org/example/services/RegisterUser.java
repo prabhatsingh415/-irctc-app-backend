@@ -4,7 +4,6 @@ import org.example.Utilities;
 import org.example.dataBase.UserDao;
 import org.example.entities.User;
 import org.example.pages.HomePage;
-
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -26,9 +25,13 @@ public class RegisterUser {
 
                 System.out.println("Enter Your Email For Verification:");
                 email = scanner.nextLine();
-
                 VerificationEmail mail = new VerificationEmail();
-
+                if (mail.isEmailAvailable(email)) {
+                    System.out.println("Email is available for registration.");
+                } else {
+                    System.out.println("This email is already registered. Please enter another email.");
+                    continue; // Restart the loop and ask for a new email
+                }
                 if (mail.sendEmail(email, name)) {
                     System.out.println("Verification email sent. Please check your inbox.");
 
