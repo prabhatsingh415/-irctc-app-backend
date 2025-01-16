@@ -1,10 +1,9 @@
 package org.example.entities;
 
 public class User {
-    private String name;
-    private String eMail;
-    private String password;
-    private String hashedPassWord;
+    private final String name;
+    private final String eMail;
+    private final String hashedPassWord;
 
     public String getHashedPassWord() {
         return hashedPassWord;
@@ -12,10 +11,6 @@ public class User {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getMail() {
@@ -28,23 +23,11 @@ public class User {
         this.hashedPassWord = hashedPassWord;
     }
 
-    public void setMail(String eMail) {
-        this.eMail = eMail;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
     @Override
     public String toString() {
         return "User{" + "name='" + name + '\'' +
                 ", eMail='" + eMail + '\'' +
                 ", hashedPassWord='" + hashedPassWord + '\'' +
                 '}';
-    }
-
-    public void setPassword(String hashedPassWord) {
-        this.hashedPassWord= hashedPassWord;
     }
 }

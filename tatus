@@ -1,0 +1,164 @@
+[1mdiff --git a/app/src/main/java/org/example/App.java b/app/src/main/java/org/example/App.java[m
+[1mindex 4e36157..b07627c 100644[m
+[1m--- a/app/src/main/java/org/example/App.java[m
+[1m+++ b/app/src/main/java/org/example/App.java[m
+[36m@@ -1,127 +1,38 @@[m
+ package org.example;[m
+ [m
+[31m-import org.example.dataBase.UserDao;[m
+[31m-import org.example.entities.User;[m
+[31m-import org.example.pages.HomePage;[m
+[31m-import org.example.services.VerificationEmail;[m
+[32m+[m
+[32m+[m[32mimport org.example.services.RegisterUser;[m
+ import java.util.Scanner;[m
+ [m
+ public class App {[m
+ [m
+     public static void main(String[] args) {[m
+[31m-        UserDao userDao = new UserDao();// UserDao Class Instance for login and signUp[m
+[31m-        HomePage home = new HomePage();[m
+[32m+[m
+[32m+[m[32m        RegisterUser registerUser = new RegisterUser();[m
+         Scanner scanner = new Scanner(System.in);[m
+         int choice;[m
+         while (true) {[m
+             System.out.println("Welcome To IRCTC - Ticket Booking APP");[m
+             System.out.println("Enter 1 For SIGN-UP ");[m
+             System.out.println("Enter 2 For Login");[m
+[31m-            System.out.println("Enter 3 For Sign-UP(for employees)");[m
+             System.out.println("Enter 4 For Exit");[m
+             choice = scanner.nextInt();[m
+             scanner.nextLine();[m
+[31m-[m
+[31m-            String name;[m
+[31m-            String email;[m
+[31m-[m
+[32m+[m[32m            System.out.println("Welcome To IRCTC - Ticket Booking APP");[m
+             switch (choice) {[m
+                 case 1:[m
+[31m-[m
+[31m-                    while (true) {[m
+[31m-                        System.out.println("Welcome To IRCTC - Ticket Booking APP");[m
+[31m-                        scanner.nextLine();[m
+[31m-                        System.out.println("Enter Your Name:");[m
+[31m-                        name = scanner.nextLine();[m
+[31m-                        System.out.println("Enter Your Email For Verification:");[m
+[31m-                        email = scanner.nextLine();[m
+[31m-                        VerificationEmail mail = new VerificationEmail();[m
+[31m-[m
+[31m-                        if (mail.sendEmail(email, name)) {[m
+[31m-                            System.out.println("We've sent a verification email. Please check your inbox and enter the verification code below.");[m
+[31m-                            // Wait for user to enter the code[m
+[31m-                            System.out.println("Enter Verification Code:");[m
+[31m-                            int userInputCode = scanner.nextInt();[m
+[31m-                            scanner.nextLine();[m
+[31m-[m
+[31m-[m
+[31m-                            if (mail.authenticator(userInputCode)) {[m
+[31m-                                System.out.println("Email verified successfully!");[m
+[31m-                                System.out.println("Set New Password");[m
+[31m-                                String hashedPassword = Utilities.passwordEncryptor(scanner.next()) ;[m
+[31m-                                User user = new User(name,email,hashedPassword);[m
+[31m-                                userDao.registerUser(user);[m
+[31m-                                home.displayHomePage(email);[m
+[31m-                                break;[m
+[31m-                            } else {[m
+[31m-[m
+[31m-                                System.out.println("Entered Wrong Code.");[m
+[31m-                                System.out.println("Would you like to:");[m
+[31m-                                System.out.println("1. Resend Code");[m
+[31m-                                System.out.println("2. Exit");[m
+[31m-                                choice = scanner.nextInt();[m
+[31m-                                scanner.nextLine();[m
+[31m-[m
+[31m-                                if (choice == 1) {[m
+[31m-                                    continue;[m
+[31m-                                } else {[m
+[31m-                                    System.out.println("Exiting the program.");[m
+[31m-                                    break;[m
+[31m-                                }[m
+[31m-                            }[m
+[31m-                        } else {[m
+[31m-                            System.out.println("Something went wrong while sending the email. Please try again.");[m
+[31m-                            System.out.println("Would you like to:");[m
+[31m-                            System.out.println("1. Re-enter your information");[m
+[31m-                            System.out.println("2. Exit");[m
+[31m-                            choice = scanner.nextInt();[m
+[31m-                            scanner.nextLine();[m
+[31m-[m
+[31m-                            if (choice == 2) {[m
+[31m-                                System.out.println("Exiting the program.");[m
+[31m-                                break;[m
+[31m-                            }[m
+[31m-[m
+[31m-                        }[m
+[31m-                    }[m
+[31m-[m
+[31m-                    break;[m
+[31m-[m
+[31m-                case 2:[m
+[31m-                    System.out.println("Enter your Email");[m
+[31m-                    scanner.nextLine();[m
+[31m-                    email = scanner.nextLine();[m
+[31m-                    System.out.println("Enter Your PassWord");[m
+[31m-                    String password = scanner.nextLine();[m
+[31m-[m
+[31m-                    if(userDao.login(email, password)){[m
+[31m-                       home.displayHomePage(email);[m
+[31m-                    }else{[m
+[31m-                        System.out.println("Wrong passWord or Email");[m
+[31m-                    }[m
+[32m+[m[32m                     registerUser.signUPUser();[m
+                      break;[m
+[31m-                case 3:[m
+[31m-                    System.out.println("Enter you Employee ID");[m
+[31m-                    int id = scanner.nextInt();[m
+[31m-                    System.out.println("Enter your name");[m
+[31m-                    name = scanner.next();[m
+[31m-                    System.out.println("Enter Your Email");[m
+[31m-                    email = scanner.next();[m
+[31m-                    System.out.println("Enter your Password");[m
+[31m-                   //   password = scanner.next();[m
+[31m-[m
+[32m+[m[32m                case 2:[m
+[32m+[m[32m                    registerUser.loginUser();[m
+                     break;[m
+[31m-[m
+[31m-                case 4:[m
+[32m+[m[32m                case 3:[m
+                     System.out.println("Exiting the application. Goodbye!");[m
+[31m-                    scanner.close();[m
+[31m-                    return;[m
+[31m-[m
+[32m+[m[32m                    System.exit(0);[m
+                 default:[m
+                     System.out.println("Invalid choice. Please try again.");[m
+                     break;[m
+             }[m
+[31m-[m
+         }[m
+     }[m
+ }[m
+[1mdiff --git a/app/src/main/java/org/example/TicketGenerator.java b/app/src/main/java/org/example/TicketGenerator.java[m
+[1mindex f61324e..dc235d2 100644[m
+[1m--- a/app/src/main/java/org/example/TicketGenerator.java[m
+[1m+++ b/app/src/main/java/org/example/TicketGenerator.java[m
+[36m@@ -1,6 +1,5 @@[m
+ package org.example;[m
+ [m
+[31m-[m
+ import javax.imageio.ImageIO;[m
+ import java.awt.*;[m
+ import java.awt.image.BufferedImage;[m
+[36m@@ -9,49 +8,65 @@[m [mimport java.io.IOException;[m
+ [m
+ public class TicketGenerator {[m
+ [m
+[31m-    public String printTicket(int trainId,String passangerName,String arrival,String destination){[m
+[31m-        String path  = "app/src/main/resources/Ticket.jpg";[m
+[32m+[m[32m    // Method to generate and print a ticket for a passenger[m
+[32m+[m[32m    public String printTicket(int trainId, String passangerName, String arrival, String destination) {[m
+[32m+[m[32m        String path = "app/src/main/resources/Ticket.jpg";  // File path for the generated ticket[m
+         try {[m
+[32m+[

@@ -4,31 +4,45 @@ import io.github.cdimascio.dotenv.Dotenv;
 import java.util.Random;
 
 public class VerificationEmail {
-      int code = code();
+    int code = code(); // Generates a random verification code when the object is created
 
     Dotenv dotenv = Dotenv.configure().directory("C:\\Users\\acer\\Irctc\\app\\.env").load();
-    String from = dotenv.get("EMAIL_USERNAME");
-    public boolean sendEmail(String mail, String userName){
+    String from = dotenv.get("EMAIL_USERNAME");  // Loads the sender's email from the environment variables
 
-
+    // Method to send the verification email to the user
+    public boolean sendEmail(String mail, String userName) {
+        // Email subject and message content with dynamic userName and verification code
         String subject = "Verification E-Mail";
         String message = "Dear " + userName +
                 ",\n\nWelcome to IRCTC Ticket Booking App! To complete your sign-up process, we just need to verify your email address. Here is your verification code: **" +
-              code  +
+                code +
                 "**.\n\nPlease enter this code in the signup form to confirm your email address and complete your registration. If you did not request this signup or believe this message was sent in error, please disregard this email.\n\n" +
                 "Thank you for joining us!\n" +
                 "Best regards,\n" +
                 "The IRCTC - Ticket Booking App Team\n" +
                 "Email :- singh.prabhat.work@gmail.com\n";
 
+        // Create an instance of EmailSender to send the email
         EmailSender emailSender = new EmailSender(from);
 
-        return emailSender.sendEmail(mail, subject, message, null);
+        // Attempt to send the email and return the result
+        boolean success = emailSender.sendEmail(mail, subject, message, null);
+
+        // Check if email was sent successfully and display the appropriate message
+        if (success) {
+            System.out.println("Verification email sent successfully!");
+        } else {
+            System.err.println("Error: We couldn't send the verification email. Please check your email settings and try again.");
+        }
+
+        return success; // Return the result of email sending
     }
 
-    public boolean sendTicket(String mail,String user,String path){
+    // Method to send the ticket confirmation email to the user with the attached ticket
+    public boolean sendTicket(String mail, String user, String path) {
+        // Email subject and message content with dynamic userName
         String subject = "Your Ticket Confirmation";
-                String message = "Dear " + user +
+        String message = "Dear " + user +
                 "\n" +
                 "Thank you for choosing our services. Please find your ticket details below:\n" +
                 "\n" +
@@ -40,22 +54,33 @@ public class VerificationEmail {
                 "\n" +
                 "Best regards,\n" +
                 "Prabhat Singh\n" +
-                 "contact :- singh.prabhat.work@gmail.com" +
+                "contact :- singh.prabhat.work@gmail.com\n" +
                 "IRCTC-TICKET_BOOKING_APP\n";
 
+        // Create an instance of EmailSender to send the ticket email
         EmailSender emailSender = new EmailSender(from);
 
-        // Send the email with the attachment
-       return emailSender.sendEmail(mail, subject, message,path);
+        // Attempt to send the email with the ticket attachment and return the result
+        boolean success = emailSender.sendEmail(mail, subject, message, path);
+
+        // Check if email was sent successfully and display the appropriate message
+        if (success) {
+            System.out.println("Ticket confirmation email sent successfully!");
+        } else {
+            System.err.println("Error: We couldn't send the ticket confirmation email. Please try again.");
+        }
+
+        return success; // Return the result of email sending
     }
 
-
-    private  int code(){
+    // Method to generate a random 4-digit verification code
+    private int code() {
         Random random = new Random();
-       return  1000 + random.nextInt(9000); // Generates a number between 1000 and 9999
+        return 1000 + random.nextInt(9000); // Generates a number between 1000 and 9999
     }
 
-    public boolean authenticator(int userInput){
-      return userInput == code;
+    // Method to authenticate the user by comparing the user input with the generated code
+    public boolean authenticator(int userInput) {
+        return userInput == code; // Check if user input matches the generated code
     }
 }
