@@ -1,7 +1,14 @@
 package org.example.services;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.example.dataBase.DataBaseConfig;
+import static org.example.dataBase.DataBaseConfig.createConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Random;
+
 
 public class VerificationEmail {
     int code = code(); // Generates a random verification code when the object is created
@@ -82,5 +89,25 @@ public class VerificationEmail {
     // Method to authenticate the user by comparing the user input with the generated code
     public boolean authenticator(int userInput) {
         return userInput == code; // Check if user input matches the generated code
+    }
+
+    public boolean isEmailAvailable(String email){
+        try(Connection connection = createConnection()){
+            String query = "SELECT EXISTS (\n" +
+                    "    SELECT 1 \n" +
+                    "    FROM user\n" +
+                    "    WHERE userEMAIL = ?\n" +
+                    ");\n";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1,email);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                // Return true if the email is NOT available (does not exist), otherwise false
+                return !resultSet.getBoolean(1); // Flip the result
+            }
+        }catch (SQLException e) {
+            System.out.println("An error occurred while checking email availability. Please contact support or try again later.");
+        }
+        return false;
     }
 }

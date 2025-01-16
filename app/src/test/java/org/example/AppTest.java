@@ -4,13 +4,12 @@
 package org.example;
 
 import org.example.services.TicketServices;
-//import org.junit.Test;
-//import static org.junit.Assert.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class AppTest {
-//    public static void main(String[] args) {
-//        TicketServices ticketServices = new TicketServices();
-//        ticketServices.bookTicket(5678,"kota","Jodhpur","412025","prabhat");
-//    }
+    public static void main(String[] args) {
+
+    }
 
 }
