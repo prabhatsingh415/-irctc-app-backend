@@ -15,7 +15,7 @@ public class App {
             System.out.println("Welcome To IRCTC - Ticket Booking APP");
             System.out.println("Enter 1 For SIGN-UP ");
             System.out.println("Enter 2 For Login");
-            System.out.println("Enter 4 For Exit");
+            System.out.println("Enter 3 For Exit");
             choice = scanner.nextInt();
             scanner.nextLine();
             System.out.println("Welcome To IRCTC - Ticket Booking APP");

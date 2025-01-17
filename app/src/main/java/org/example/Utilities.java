@@ -3,6 +3,9 @@ package org.example;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +55,23 @@ public class Utilities {
     // Method to check if the entered password matches the hashed password
     public static boolean checkPassword(String userInput, String hashedPassword) {
         // Check if the user input matches the hashed password
+        if (hashedPassword == null || hashedPassword.isEmpty()) {
+            return false;
+        }
         return BCrypt.checkpw(userInput, hashedPassword);
+    }
+
+    public static boolean isDateValid(String date) {
+        try {
+            // Parse the entered date and compare it with the current date
+            LocalDate travelDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDate today = LocalDate.now();
+
+            // Check if the travel date is today or later
+            return !travelDate.isBefore(today);
+        } catch (DateTimeParseException e) {
+            // If the date is not parsable, return false
+            return false;
+        }
     }
 }

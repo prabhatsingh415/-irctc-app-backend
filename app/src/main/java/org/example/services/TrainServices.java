@@ -106,5 +106,27 @@ public class TrainServices {
             System.out.println("An error occurred while retrieving stations for the train. Please try again later.");
         }
     }
+    public boolean isTrainIdValid(int trainId) {
+        // SQL query to check if the train ID exists in the trains table
+        String query = "SELECT COUNT(*) FROM trains WHERE TrainID = ?";
+
+        try (Connection connection = createConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            // Set the train ID parameter
+            stmt.setInt(1, trainId);
+
+            // Execute the query
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                // Check if the count is greater than 0 (i.e., train ID exists)
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("An error occurred while validating the Train ID. Please try again later.");
+        }
+        return false;
+    }
 }
 

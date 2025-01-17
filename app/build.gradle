@@ -16,11 +16,9 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit test framework.
-    testImplementation libs.junit
 
-    // This dependency is used by the application.
-    implementation libs.guava
+    implementation 'com.google.guava:guava:32.1.2-jre' // Replace with the desired Guava version
+
     implementation 'com.sun.mail:jakarta.mail:2.0.1' // Ensure you're using the latest version
     implementation 'jakarta.activation:jakarta.activation-api:1.2.2' // Ensure compatibility
     implementation 'mysql:mysql-connector-java:8.0.14'
