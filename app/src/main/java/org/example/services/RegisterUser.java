@@ -87,14 +87,14 @@ public class RegisterUser {
     }
 
     public void loginUser() {
-        System.out.println("Enter your Email");
-        scanner.nextLine();
-        email = scanner.nextLine();
-        System.out.println("Enter Your Password");
-        String password = scanner.nextLine();
+        System.out.println("Enter your Email:");
+        String email = scanner.nextLine(); // Reads the email input
+
+        System.out.println("Enter Your Password:");
+        String password = scanner.nextLine(); // Reads the password input
 
         if (userDao.login(email, password)) {
-            home.displayHomePage(email);
+            home.displayHomePage(email); // Navigates to the home page if login succeeds
         } else {
             System.out.println("Wrong password or Email");
         }

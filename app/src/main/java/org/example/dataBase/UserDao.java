@@ -56,7 +56,7 @@ public class UserDao {
 
     // Method to log in a user
     public boolean login(String email, String password) {
-        String hashedPassword = " "; // To store the fetched hashed password from the database
+        String hashedPassword = null; // To store the fetched hashed password from the database
 
         // SQL query to get the stored password for the given email
         String query = "SELECT UserPassword FROM user WHERE UserEMAIL = ?";
@@ -69,7 +69,7 @@ public class UserDao {
 
             if (!rs.next()) {
                 // If no matching email is found, show a user-friendly message
-                System.out.println("Email not found. Please check your email or sign up.");
+                System.out.println("Invalid email or password");
             } else {
                 // If the email is found, retrieve the hashed password from the database
                 hashedPassword = rs.getString("UserPassword");

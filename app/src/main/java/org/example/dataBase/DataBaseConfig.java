@@ -25,8 +25,6 @@ public class DataBaseConfig {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(url, userName, password);
 
-            // If connection is successful, print a user-friendly message.
-            System.out.println("Database connection established successfully!");
         } catch (Exception e) {
             // Provide a user-friendly error message.
             System.out.println("Oops! Something went wrong while connecting to the database. Please try again later.");

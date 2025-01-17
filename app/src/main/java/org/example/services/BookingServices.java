@@ -1,5 +1,7 @@
 package org.example.services;
 
+import org.example.Utilities;
+
 import java.util.Scanner;
 
 public class BookingServices {
@@ -9,6 +11,7 @@ public class BookingServices {
     TrainServices trainServices = new TrainServices();
     TicketServices ticketServices = new TicketServices();
     // Method to cancel a booking based on a ticket ID
+
     public void cancelBooking(){
         System.out.println("Enter Your Ticket Id ");
 
@@ -41,16 +44,37 @@ public class BookingServices {
         // Call searchTrain from TrainServices to search for trains based on origin and destination
         trainServices.searchTrain(originLocation, destinationLocation);
 
-        System.out.println("Enter Train Id");
 
-        // Read the train ID selected by the user
-        int trainId = scanner.nextInt();
-        scanner.nextLine(); // Consume the leftover newline character
+        int trainId;
+        while (true) {
+            System.out.println("Enter Train Id");
 
-        System.out.println("Enter the Date Of Travel");
+            // Read the train ID from the user input
+            trainId = scanner.nextInt();
+            scanner.nextLine(); // Consume the leftover newline character
 
-        // Read the travel date from the user input
-        String dateOfTravel = scanner.nextLine();
+            // Validate the train ID
+            if (trainServices.isTrainIdValid(trainId)) {
+                break; // Exit the loop if the train ID is valid
+            } else {
+                System.out.println("Invalid Train ID. Please enter a valid Train ID.");
+            }
+        }
+
+        String dateOfTravel;
+        while (true) {
+            System.out.println("Enter the Date Of Travel (format: yyyy-MM-dd)");
+
+            // Read the travel date from the user input
+            dateOfTravel = scanner.nextLine();
+
+            // Validate the travel date
+            if (Utilities.isDateValid(dateOfTravel)) {
+                break; // Exit the loop if the date is valid
+            } else {
+                System.out.println("Invalid Date. Please enter a valid date (today or later).");
+            }
+        }
 
         System.out.println("Enter The Passenger Name");
 
