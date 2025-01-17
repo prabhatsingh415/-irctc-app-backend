@@ -29,9 +29,9 @@ public class BookingServices {
 
     // Method to book a new ticket by providing details from the user
     public void bookTicket(String email){
+
         System.out.println("Enter The origin platform ");
 
-        // Read the origin station from the user input
         String originLocation = scanner.nextLine();
 
         System.out.println("Enter The Destination");
@@ -42,7 +42,7 @@ public class BookingServices {
         System.out.println("Select By Which Train You Want To go");
 
         // Call searchTrain from TrainServices to search for trains based on origin and destination
-        trainServices.searchTrain(originLocation, destinationLocation);
+         trainServices.searchTrain(originLocation, destinationLocation);
 
 
         int trainId;

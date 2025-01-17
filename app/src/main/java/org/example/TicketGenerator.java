@@ -5,37 +5,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TicketGenerator {
-    public static void main(String[] args) throws ParseException {
-        String ticketId = "4555";
-        int trainId = 101; // Test with an existing train ID
-        String Traintype = "apni";
-        String dateStr = "08-30-29"; // Date in MM-dd-yy format
-
-        // Parse the string to Date using SimpleDateFormat
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yy");
-        Date arrival = sdf.parse(dateStr);
-        String dateStr1 = "08-30-29"; // Date in MM-dd-yy format
-
-        // Parse the string to Date using SimpleDateFormat
-        SimpleDateFormat sdf1 = new SimpleDateFormat("MM-dd-yy");
-        Date departure = sdf1.parse(dateStr1);
-        String destination = "New York";
-        String arrivalstation = "Chicago";
-        String name  = "psr";
-        String dateStr01 = "08-30-39"; // Date in MM-dd-yy format
-        SimpleDateFormat sdf2 = new SimpleDateFormat("MM-dd-yy");
-        Date date = sdf2.parse(dateStr01);
-
-        printTicket(ticketId,trainId,Traintype,arrival,departure,name,arrivalstation,destination,date);
-    }
 
     // Method to generate and print a ticket for a passenger
-    public static String printTicket(String ticketId, int trainId, String trainType, Date arrivalTime,Date departureTime, String passangerName, String arrival, String destination,Date travelDate) {
+    public String printTicket(String ticketId, int trainId, String trainType, Date arrivalTime,Date departureTime, String passangerName, String arrival, String destination,Date travelDate) {
         String path = "app/src/main/resources/Ticket.jpg";  // File path for the generated ticket
         try {
             // Load the background image for the ticket
@@ -72,7 +47,7 @@ public class TicketGenerator {
             g2d.drawString("Departure Station  :- " + destination, padding, padding + heightLine * 7);
             g2d.drawString("Arrival Time       :- " + arrivalTime, padding, padding + heightLine * 8);
             g2d.drawString("Departure Time     :- " + departureTime, padding, padding + heightLine * 9);
-            g2d.drawString("Travel Time        :- " + departureTime, padding, padding + heightLine * 10);
+            g2d.drawString("Travel Time        :- " + travelDate, padding, padding + heightLine * 10);
             // Set font and color for the footer text
             g2d.setFont(new Font("Arial", Font.BOLD, 15));
             g2d.setColor(Color.BLACK);

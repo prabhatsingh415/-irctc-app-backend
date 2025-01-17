@@ -14,7 +14,7 @@ public class TicketServices {
 
     // Method to generate a unique TicketId
     public static String generateUniqueId() {
-        return UUID.randomUUID().toString(); // Generate a random unique ID
+        return UUID.randomUUID().toString().substring(0, 8).toUpperCase(); // Example: 1F2B3C4D
     }
 
     // Method to book a ticket
@@ -106,16 +106,18 @@ public class TicketServices {
             // Execute the query to delete the ticket
             int rowsAffected = preparedStatement.executeUpdate();
 
-            // If the ticket is deleted successfully, return false (ticket canceled)
+            // If the ticket is deleted successfully, return true (canceled)
             if (rowsAffected > 0) {
-                return false;
+                return true; // Ticket successfully canceled
             }
 
         } catch (SQLException e) {
-            // Error handling with user-friendly message instead of printStackTrace
+            // Error handling with user-friendly message
             System.err.println("Error: There was an issue while canceling the ticket. Please try again.");
-            throw new RuntimeException(e); // Rethrow exception for further handling if necessary
+            throw new RuntimeException(e);
         }
-        return true; // Return true if the ticket was not found or canceled successfully
+        // Return false if no ticket was found
+        return false;
     }
+
 }

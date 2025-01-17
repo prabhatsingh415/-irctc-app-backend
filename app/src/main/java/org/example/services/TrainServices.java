@@ -1,6 +1,7 @@
 package org.example.services;
 
 import java.sql.*;
+import java.util.Scanner;
 
 import static org.example.dataBase.DataBaseConfig.createConnection;
 
@@ -8,71 +9,86 @@ public class TrainServices {
 
     // Method to search for trains based on the arrival and destination stations
     public void searchTrain(String arrivalStation, String destinationStation) {
-        // SQL query to find trains based on the arrival and destination stations,
-        // ensuring that the arrival station comes before the destination station
-        String query = "SELECT DISTINCT t.TrainID, t.TrainName, t.TrainType, t.TotalSeats, " +
-                "t.SourceStations, t.DestinationStation, t.DepartureTime, t.ArrivalTime " +
-                "FROM TrainDetails t " +
-                "JOIN TrainStation tsArrival ON t.TrainID = tsArrival.TrainID " +
-                "JOIN StationDetails sArrival ON tsArrival.StationID = sArrival.StationID " +
-                "JOIN TrainStation tsDestination ON t.TrainID = tsDestination.TrainID " +
-                "JOIN StationDetails sDestination ON tsDestination.StationID = sDestination.StationID " +
-                "WHERE LOWER(sArrival.StationName) = LOWER(?) " +  // Match the arrival station name (case-insensitive)
-                "AND LOWER(sDestination.StationName) = LOWER(?) " + // Match the destination station name (case-insensitive)
-                "AND tsArrival.StationOrder < tsDestination.StationOrder " + // Ensure the flow of stations is correct
-                "AND tsArrival.StationOrder < (SELECT MAX(ts.StationOrder) " +
-                "                             FROM TrainStation ts " +
-                "                             WHERE ts.TrainID = t.TrainID)"; // Arrival station should not be the last station
+        boolean trainFound = false; // Flag to track if a train is found
 
-        // Try-with-resources to automatically close resources (Connection, PreparedStatement, ResultSet)
-        try (Connection connection = createConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (Connection connection = createConnection()) {
+            // Loop until a train is found or the user decides to exit
+            while (!trainFound) {
+                // SQL query to find trains
+                String query = "SELECT DISTINCT t.TrainID, t.TrainName, t.TrainType, t.TotalSeats, " +
+                        "t.SourceStations, t.DestinationStation, t.DepartureTime, t.ArrivalTime " +
+                        "FROM TrainDetails t " +
+                        "JOIN TrainStation tsArrival ON t.TrainID = tsArrival.TrainID " +
+                        "JOIN StationDetails sArrival ON tsArrival.StationID = sArrival.StationID " +
+                        "JOIN TrainStation tsDestination ON t.TrainID = tsDestination.TrainID " +
+                        "JOIN StationDetails sDestination ON tsDestination.StationID = sDestination.StationID " +
+                        "WHERE LOWER(sArrival.StationName) = LOWER(?) " +
+                        "AND LOWER(sDestination.StationName) = LOWER(?) " +
+                        "AND tsArrival.StationOrder < tsDestination.StationOrder " +
+                        "AND tsArrival.StationOrder < (SELECT MAX(ts.StationOrder) " +
+                        "                             FROM TrainStation ts " +
+                        "                             WHERE ts.TrainID = t.TrainID)";
 
-            // Set the parameters for the query (arrival station and destination station)
-            preparedStatement.setString(1, arrivalStation.trim());
-            preparedStatement.setString(2, destinationStation.trim());
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    // Set query parameters
+                    preparedStatement.setString(1, arrivalStation.trim());
+                    preparedStatement.setString(2, destinationStation.trim());
 
-            // Execute the query and retrieve the results
-            ResultSet resultSet = preparedStatement.executeQuery();
+                    // Execute the query
+                    ResultSet resultSet = preparedStatement.executeQuery();
 
-            // If no results are found, inform the user
-            if (!resultSet.next()) {
-                System.out.println("No results found for the given stations.");
-            } else {
-                // Iterate over all the result rows (train details)
-                do {
-                    // Retrieve train details from the result set
-                    int trainId = resultSet.getInt("TrainID");
-                    String trainName = resultSet.getString("TrainName");
-                    String trainType = resultSet.getString("TrainType");
-                    int totalSeats = resultSet.getInt("TotalSeats");
-                    String sourceStations = resultSet.getString("SourceStations");
-                    String destinationStationResult = resultSet.getString("DestinationStation");
-                    Time departureTime = resultSet.getTime("DepartureTime");
-                    Time arrivalTime = resultSet.getTime("ArrivalTime");
+                    if (!resultSet.next()) {
+                        // No results found, prompt the user to re-enter stations
+                        System.out.println("No trains found for the given stations.");
+                        System.out.println("Do you want to try again? (yes/no): ");
+                        Scanner scanner = new Scanner(System.in);
+                        String choice = scanner.nextLine().trim().toLowerCase();
 
-                    // Print the train details to the user
-                    System.out.println("Train ID: " + trainId);
-                    System.out.println("Train Name: " + trainName);
-                    System.out.println("Train Type: " + trainType);
-                    System.out.println("Total Seats: " + totalSeats);
-                    System.out.println("Source Stations: " + sourceStations);
-                    System.out.println("Destination Station: " + destinationStationResult);
-                    System.out.println("Departure Time: " + departureTime);
-                    System.out.println("Arrival Time: " + arrivalTime);
+                        if (choice.equals("no")) {
+                            System.out.println("Exiting search.");
+                            return; // Exit the method
+                        }
 
-                    // Fetch and display all stations for the given train
-                    System.out.print("Stations: { ");
-                    printStationsForTrain(trainId, connection);  // Call method to print stations for this train
-                    System.out.println(" }");
-                    System.out.println("------------------------------------------------");
-                } while (resultSet.next());
+                        // Prompt the user to re-enter the stations
+                        System.out.print("Enter arrival station: ");
+                        arrivalStation = scanner.nextLine();
+                        System.out.print("Enter destination station: ");
+                        destinationStation = scanner.nextLine();
+                    } else {
+                        // Train found, display the results
+                        do {
+                            int trainId = resultSet.getInt("TrainID");
+                            String trainName = resultSet.getString("TrainName");
+                            String trainType = resultSet.getString("TrainType");
+                            int totalSeats = resultSet.getInt("TotalSeats");
+                            String sourceStations = resultSet.getString("SourceStations");
+                            String destinationStationResult = resultSet.getString("DestinationStation");
+                            Time departureTime = resultSet.getTime("DepartureTime");
+                            Time arrivalTime = resultSet.getTime("ArrivalTime");
+
+                            System.out.println("Train ID: " + trainId);
+                            System.out.println("Train Name: " + trainName);
+                            System.out.println("Train Type: " + trainType);
+                            System.out.println("Total Seats: " + totalSeats);
+                            System.out.println("Source Stations: " + sourceStations);
+                            System.out.println("Destination Station: " + destinationStationResult);
+                            System.out.println("Departure Time: " + departureTime);
+                            System.out.println("Arrival Time: " + arrivalTime);
+
+                            System.out.print("Stations: { ");
+                            printStationsForTrain(trainId, connection);
+                            System.out.println(" }");
+                            System.out.println("------------------------------------------------");
+                        } while (resultSet.next());
+                        trainFound = true; // Set flag to true to exit the loop
+                    }
+                }
             }
         } catch (SQLException e) {
-            // In case of an exception, print a user-friendly message
             System.out.println("An error occurred while searching for trains. Please try again later.");
         }
     }
+
 
     // Helper method to fetch and print the list of stations for a specific train
     private void printStationsForTrain(int trainId, Connection connection) {
