@@ -107,8 +107,8 @@ public class TrainServices {
         }
     }
     public boolean isTrainIdValid(int trainId) {
-        // SQL query to check if the train ID exists in the trains table
-        String query = "SELECT COUNT(*) FROM trains WHERE TrainID = ?";
+        // SQL query to check if the train ID exists in the TrainDetails table
+        String query = "SELECT COUNT(*) FROM TrainDetails WHERE TrainID = ?";
 
         try (Connection connection = createConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -121,12 +121,16 @@ public class TrainServices {
 
             if (rs.next()) {
                 // Check if the count is greater than 0 (i.e., train ID exists)
-                return rs.getInt(1) > 0;
+                int count = rs.getInt(1);
+                return count > 0;
+            } else {
+                System.out.println("No train found for Train ID: " + trainId);
             }
         } catch (SQLException e) {
             System.out.println("An error occurred while validating the Train ID. Please try again later.");
         }
         return false;
     }
+
 }
 
