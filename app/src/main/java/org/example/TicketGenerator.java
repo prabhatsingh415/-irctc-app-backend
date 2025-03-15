@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
 public class TicketGenerator {
@@ -14,7 +15,11 @@ public class TicketGenerator {
         String path = "app/src/main/resources/Ticket.jpg";  // File path for the generated ticket
         try {
             // Load the background image for the ticket
-            File backgroundImage = new File("app/src/main/resources/Ticket-BackgroundImage.jpg");
+
+            InputStream backgroundImage = getClass().getClassLoader().getResourceAsStream("resources/Ticket-BackgroundImage.jpg");
+//            System.out.println("File exists: " + backgroundImage.exists());
+//            System.out.println("Absolute Path: " + backgroundImage.getAbsolutePath());
+            assert backgroundImage != null;
             BufferedImage image = ImageIO.read(backgroundImage);
             Graphics2D g2d = image.createGraphics();
 
@@ -70,6 +75,7 @@ public class TicketGenerator {
         } catch (IOException e) {
             // If an error occurs, display a user-friendly message
             System.out.println("An error occurred while generating the ticket. Please try again.");
+            e.printStackTrace();
             throw new RuntimeException(e);  // Rethrow the exception for further handling if needed
         }
         return path;  // Return the file path of the printed ticket

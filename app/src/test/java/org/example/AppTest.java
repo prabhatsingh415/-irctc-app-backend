@@ -3,11 +3,18 @@
  */
 package org.example;
 
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class AppTest {
 
-
-    public static void main(String[] args) {
-        App.main(args);
+    public static void main(String[] args) throws ParseException {
+          TicketGenerator ticketGenerator = new TicketGenerator();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date travelDate = sdf.parse("2025-03-15 10:30:00");
+          ticketGenerator.printTicket("44557",1224,"raj",travelDate,travelDate,"mahesh","kota","ajmer",travelDate);
     }
 }
 
