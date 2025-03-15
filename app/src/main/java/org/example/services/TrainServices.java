@@ -1,16 +1,22 @@
 package org.example.services;
 
+import com.google.gson.Gson;
+import org.example.entities.Train;
+
 import java.sql.*;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import static org.example.dataBase.DataBaseConfig.createConnection;
 
 public class TrainServices {
 
     // Method to search for trains based on the arrival and destination stations
-    public void searchTrain(String arrivalStation, String destinationStation) {
+    public String searchTrain(String arrivalStation, String destinationStation) {
         boolean trainFound = false; // Flag to track if a train is found
-
+        List<Train> trainList = new ArrayList<>();
+        String jSonData = null;
         try (Connection connection = createConnection()) {
             // Loop until a train is found or the user decides to exit
             while (!trainFound) {
@@ -38,22 +44,7 @@ public class TrainServices {
                     ResultSet resultSet = preparedStatement.executeQuery();
 
                     if (!resultSet.next()) {
-                        // No results found, prompt the user to re-enter stations
-                        System.out.println("No trains found for the given stations.");
-                        System.out.println("Do you want to try again? (yes/no): ");
-                        Scanner scanner = new Scanner(System.in);
-                        String choice = scanner.nextLine().trim().toLowerCase();
-
-                        if (choice.equals("no")) {
-                            System.out.println("Exiting search.");
-                            return; // Exit the method
-                        }
-
-                        // Prompt the user to re-enter the stations
-                        System.out.print("Enter arrival station: ");
-                        arrivalStation = scanner.nextLine();
-                        System.out.print("Enter destination station: ");
-                        destinationStation = scanner.nextLine();
+                        return "No Trains Found Try to change Stations";
                     } else {
                         // Train found, display the results
                         do {
@@ -65,39 +56,32 @@ public class TrainServices {
                             String destinationStationResult = resultSet.getString("DestinationStation");
                             Time departureTime = resultSet.getTime("DepartureTime");
                             Time arrivalTime = resultSet.getTime("ArrivalTime");
-
-                            System.out.println("Train ID: " + trainId);
-                            System.out.println("Train Name: " + trainName);
-                            System.out.println("Train Type: " + trainType);
-                            System.out.println("Total Seats: " + totalSeats);
-                            System.out.println("Source Stations: " + sourceStations);
-                            System.out.println("Destination Station: " + destinationStationResult);
-                            System.out.println("Departure Time: " + departureTime);
-                            System.out.println("Arrival Time: " + arrivalTime);
-
-                            System.out.print("Stations: { ");
-                            printStationsForTrain(trainId, connection);
-                            System.out.println(" }");
-                            System.out.println("------------------------------------------------");
+                            List<String> stations = getStationsForTrain(trainId,connection);
+                            Train train = new Train(trainId,trainName,trainType,totalSeats,sourceStations,destinationStationResult,departureTime,arrivalTime,stations);
+                            trainList.add(train);
                         } while (resultSet.next());
                         trainFound = true; // Set flag to true to exit the loop
                     }
                 }
+                Gson gson = new Gson();
+                jSonData = gson.toJson(trainList);
             }
         } catch (SQLException e) {
-            System.out.println("An error occurred while searching for trains. Please try again later.");
+            return "An error occurred while searching for trains. Please try again later.";
         }
+        return jSonData;
     }
 
 
     // Helper method to fetch and print the list of stations for a specific train
-    private void printStationsForTrain(int trainId, Connection connection) {
+    private List<String> getStationsForTrain(int trainId, Connection connection) {
         // SQL query to get the station names for a specific train, ordered by the station order
         String query = "SELECT s.StationName " +
                 "FROM StationDetails s " +
                 "JOIN TrainStation ts ON s.StationID = ts.StationID " +
                 "WHERE ts.TrainID = ? " +
                 "ORDER BY ts.StationOrder"; // Ensure stations are printed in the correct order
+        List<String> stations = new ArrayList<>();
 
         // Try-with-resources to automatically close the PreparedStatement and ResultSet
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -107,20 +91,15 @@ public class TrainServices {
             // Execute the query and get the result set
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // Boolean to handle the formatting of station names (to manage commas between stations)
-            boolean firstStation = true;
             while (resultSet.next()) {
                 String stationName = resultSet.getString("StationName");
-                if (!firstStation) {
-                    System.out.print(", ");
-                }
-                System.out.print(stationName);
-                firstStation = false; // After the first station, set the flag to false
+                 stations.add(stationName);
             }
         } catch (SQLException e) {
             // In case of an error while fetching the stations, print a user-friendly message
-            System.out.println("An error occurred while retrieving stations for the train. Please try again later.");
+            stations.add("An error occurred while retrieving stations for the train. Please try again later.");
         }
+        return stations;
     }
     public boolean isTrainIdValid(int trainId) {
         // SQL query to check if the train ID exists in the TrainDetails table

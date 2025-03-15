@@ -120,4 +120,20 @@ public class TicketServices {
         return false;
     }
 
+    public boolean isTicketIdValid(String ticketId) {
+        String query = "SELECT TrainID FROM ticket WHERE TicketId = ?";
+
+        try (Connection connection = createConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            stmt.setString(1, ticketId);
+            ResultSet rs = stmt.executeQuery();
+
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
