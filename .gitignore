@@ -3,3 +3,18 @@
 # Ignore Gradle build output directory
 build
 app/.env
+
+# Ignore IntelliJ files
+.idea/
+*.iml
+
+# Ignore build output
+/build/
+/out/
+/target/
+*.war
+*.class
+
+# Ignore system files
+.DS_Store
+Thumbs.db
