@@ -4,7 +4,7 @@
 This is a basic IRCTC clone backend project built with Java, Servlets, JSP, and JDBC.
 
 ## 🛠 Tech Stack
-- Java 17
+- Java 
 - Servlets and JSP
 - JDBC (MySQL)
 - Apache Tomcat
