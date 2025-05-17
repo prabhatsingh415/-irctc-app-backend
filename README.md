@@ -21,10 +21,5 @@ This is a basic IRCTC clone backend project built with Java, Servlets, JSP, and 
 - Ticket Booking
 - Ticket Cancellation
 
-## 📸 Screenshots
-(You can add 1-2 screenshots of your web pages later)
-
----
-
 ## ✅ Author
 Prabhat Singh
