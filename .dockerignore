@@ -1,5 +1,4 @@
 # Build and temp folders
-/build
 /temp
 /tomcat.8080
 /tomcat_temp
