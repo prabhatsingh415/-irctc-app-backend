@@ -9,7 +9,6 @@ app/.env
 *.iml
 
 # Ignore build output
-/build/
 /out/
 /target/
 *.war
