@@ -8,9 +8,7 @@ import java.sql.DriverManager;
 
 public class DataBaseConfig {
     // Loading environment variables from the .env file for security purposes.
-    static Dotenv dotenv = Dotenv.configure()
-            .directory("C:\\Users\\acer\\Irctc\\app\\src\\main\\resources\\.env")
-            .load();
+    static Dotenv dotenv = Dotenv.load();
 
     // Declaring the connection and credentials required to connect to the database.
     private static Connection connection;
