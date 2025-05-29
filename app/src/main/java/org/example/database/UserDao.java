@@ -1,12 +1,12 @@
-package org.example.dataBase;
+package org.example.database;
 
 import org.example.Utilities;
 import org.example.entities.User;
-import org.example.pages.HomePage;
+import org.example.page.HomePage;
 
 import java.sql.*;
 
-import static org.example.dataBase.DataBaseConfig.createConnection;
+import static org.example.database.DataBaseConfig.createConnection;
 
 public class UserDao {
 

@@ -1,38 +1,49 @@
 package org.example;
 
 
+import org.apache.catalina.Context;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.Server;
+import org.apache.catalina.connector.Connector;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.webresources.DirResourceSet;
+import org.apache.catalina.webresources.StandardRoot;
 import org.example.services.RegisterUser;
+
+import java.io.File;
 import java.util.Scanner;
 
 public class App {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws LifecycleException {
 
-        RegisterUser registerUser = new RegisterUser();
-        Scanner scanner = new Scanner(System.in);
-        int choice;
-        while (true) {
-            System.out.println("Welcome To IRCTC - Ticket Booking APP");
-            System.out.println("Enter 1 For SIGN-UP ");
-            System.out.println("Enter 2 For Login");
-            System.out.println("Enter 3 For Exit");
-            choice = scanner.nextInt();
-            scanner.nextLine();
-            System.out.println("Welcome To IRCTC - Ticket Booking APP");
-            switch (choice) {
-                case 1:
-                     registerUser.signUPUser();
-                     break;
-                case 2:
-                    registerUser.loginUser();
-                    break;
-                case 3:
-                    System.out.println("Exiting the application. Goodbye!");
-                    System.exit(0);
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-                    break;
+
+                // Initialize Tomcat
+                Tomcat tomcat = new Tomcat();
+
+                // Set port (use Render's PORT env variable or default to 8080)
+                String port = System.getenv("PORT") != null ? System.getenv("PORT") : "8080";
+                tomcat.setPort(Integer.parseInt(port));
+
+                // Set base directory for temporary files
+                String baseDir = "tomcat_temp";
+                tomcat.setBaseDir(baseDir);
+
+                // Add web application
+                String webappDir = "app/src/main/webapp"; // Path to webapp directory
+                Context ctx = tomcat.addWebapp("", new File(webappDir).getAbsolutePath());
+
+                // Add compiled classes (Gradle builds to build/classes/java/main)
+                String classesDir = "app/build/classes/java/main";
+                StandardRoot resources = new StandardRoot(ctx);
+                resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes", new File(classesDir).getAbsolutePath(), "/"));
+                ctx.setResources(resources);
+
+                // Start the server
+                tomcat.start();
+                System.out.println("Tomcat started on port " + port);
+
+                // Keep server running
+                tomcat.getServer().await();
             }
-        }
-    }
 }

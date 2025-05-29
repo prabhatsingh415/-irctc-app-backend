@@ -1,8 +1,8 @@
 package org.example.services;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import org.example.dataBase.DataBaseConfig;
-import static org.example.dataBase.DataBaseConfig.createConnection;
+
+import static org.example.database.DataBaseConfig.createConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

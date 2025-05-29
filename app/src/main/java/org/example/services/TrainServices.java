@@ -8,18 +8,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import static org.example.dataBase.DataBaseConfig.createConnection;
+import static org.example.database.DataBaseConfig.createConnection;
 
 public class TrainServices {
 
+    public TrainServices() {
+        loadStationsFromDB(); // Load station names once when the service starts
+    }
     // Method to search for trains based on the arrival and destination stations
     public String searchTrain(String arrivalStation, String destinationStation) {
-        boolean trainFound = false; // Flag to track if a train is found
         List<Train> trainList = new ArrayList<>();
-        String jSonData = null;
+        String jSonData;
         try (Connection connection = createConnection()) {
             // Loop until a train is found or the user decides to exit
-            while (!trainFound) {
                 // SQL query to find trains
                 String query = "SELECT DISTINCT t.TrainID, t.TrainName, t.TrainType, t.TotalSeats, " +
                         "t.SourceStations, t.DestinationStation, t.DepartureTime, t.ArrivalTime " +
@@ -60,19 +61,16 @@ public class TrainServices {
                             Train train = new Train(trainId,trainName,trainType,totalSeats,sourceStations,destinationStationResult,departureTime,arrivalTime,stations);
                             trainList.add(train);
                         } while (resultSet.next());
-                        trainFound = true; // Set flag to true to exit the loop
                     }
                 }
                 Gson gson = new Gson();
                 jSonData = gson.toJson(trainList);
-            }
+
         } catch (SQLException e) {
             return "An error occurred while searching for trains. Please try again later.";
         }
         return jSonData;
     }
-
-
     // Helper method to fetch and print the list of stations for a specific train
     private List<String> getStationsForTrain(int trainId, Connection connection) {
         // SQL query to get the station names for a specific train, ordered by the station order
@@ -127,5 +125,19 @@ public class TrainServices {
         return false;
     }
 
-}
+    private static final List<String> stationList = new ArrayList<>();
 
+    public void loadStationsFromDB() {
+        stationList.clear();
+        try (Connection con = createConnection();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT DISTINCT SourceStations FROM TrainDetails UNION SELECT DISTINCT DestinationStation FROM TrainDetails")) {
+
+            while (rs.next()) {
+                stationList.add(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}

@@ -1,11 +1,11 @@
-package org.example.Servlets;
+package org.example.servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.example.Utilities;
-import org.example.dataBase.UserDao;
+import org.example.database.UserDao;
 import org.example.entities.User;
 import org.example.services.VerificationEmail;
 import java.io.IOException;
