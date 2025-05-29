@@ -1,4 +1,4 @@
-package org.example.Servlets;
+package org.example.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -21,5 +21,4 @@ public class SearchTrainServlet extends HttpServlet {
         String data  =  trainServices.searchTrain(arrivalStation,destinationStation);
         resp.getWriter().write(data);
     }
-
 }

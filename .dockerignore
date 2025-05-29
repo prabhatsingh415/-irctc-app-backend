@@ -1,0 +1,26 @@
+# Build and temp folders
+/build
+/temp
+/tomcat.8080
+/tomcat_temp
+/untitled
+
+# IDE and editor configs
+/.idea
+/.smarttomcat
+/.gradle
+
+# Version control metadata
+/.git
+.gitignore
+.gitattributes
+
+# Logs, backups, temp files
+*.log
+*.tmp
+*.bak
+
+# Other
+/status
+.env
+f

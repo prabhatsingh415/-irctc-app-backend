@@ -13,7 +13,7 @@
     <!-- user Login Servlet Configuration -->
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
-        <servlet-class>org.example.Servlets.LoginServlet</servlet-class>
+        <servlet-class>org.example.servlet.LoginServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -24,7 +24,7 @@
     <!-- SearchTrain Servlet Configuration -->
     <servlet>
         <servlet-name>SearchTrainServlet</servlet-name>
-        <servlet-class>org.example.Servlets.SearchTrainServlet</servlet-class>
+        <servlet-class>org.example.servlet.SearchTrainServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -36,7 +36,7 @@
    <!--   user Signup Configuration-->
     <servlet>
         <servlet-name>UserAuthServlet</servlet-name>
-        <servlet-class>org.example.Servlets.UserAuthServlet</servlet-class>
+        <servlet-class>org.example.servlet.UserAuthServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -47,7 +47,7 @@
     <!--   BookTicket functionality Configuration-->
     <servlet>
         <servlet-name>BookTicketServlet</servlet-name>
-        <servlet-class>org.example.Servlets.BookTicketServlet</servlet-class>
+        <servlet-class>org.example.servlet.BookTicketServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -58,7 +58,7 @@
     <!--   CancelTicket functionality Configuration-->
     <servlet>
         <servlet-name>CancelTicketServlet</servlet-name>
-        <servlet-class>org.example.Servlets.CancelTicketServlet</servlet-class>
+        <servlet-class>org.example.servlet.CancelTicketServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

@@ -5,9 +5,9 @@
 [36m@@ -1,127 +1,38 @@[m
  package org.example;[m
  [m
-[31m-import org.example.dataBase.UserDao;[m
+[31m-import org.example.database.UserDao;[m
 [31m-import org.example.entities.User;[m
-[31m-import org.example.pages.HomePage;[m
+[31m-import org.example.page.HomePage;[m
 [31m-import org.example.services.VerificationEmail;[m
 [32m+[m
 [32m+[m[32mimport org.example.services.RegisterUser;[m

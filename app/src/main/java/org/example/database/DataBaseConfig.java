@@ -1,17 +1,15 @@
-package org.example.dataBase;
+package org.example.database;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
-
 
 
 public class DataBaseConfig {
     // Loading environment variables from the .env file for security purposes.
     static Dotenv dotenv = Dotenv.configure()
-            .directory("C:\\Users\\acer\\Irctc\\app\\.env")
+            .directory("C:\\Users\\acer\\Irctc\\app\\src\\main\\resources\\.env")
             .load();
 
     // Declaring the connection and credentials required to connect to the database.

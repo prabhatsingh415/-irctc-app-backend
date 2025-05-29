@@ -8,7 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.UUID;
 
-import static org.example.dataBase.DataBaseConfig.createConnection;
+import static org.example.database.DataBaseConfig.createConnection;
 
 public class TicketServices {
 

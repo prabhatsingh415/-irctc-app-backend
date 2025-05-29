@@ -1,10 +1,10 @@
-package org.example.Servlets;
+package org.example.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.dataBase.UserDao;
+import org.example.database.UserDao;
 
 
 import java.io.IOException;

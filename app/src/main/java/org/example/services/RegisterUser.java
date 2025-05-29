@@ -1,9 +1,9 @@
 package org.example.services;
 
 import org.example.Utilities;
-import org.example.dataBase.UserDao;
+import org.example.database.UserDao;
 import org.example.entities.User;
-import org.example.pages.HomePage;
+import org.example.page.HomePage;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 

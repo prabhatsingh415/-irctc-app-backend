@@ -29,8 +29,6 @@ dependencies {
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:11.0.5'
     implementation 'org.apache.tomcat.embed:tomcat-embed-el:11.0.5'
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
-    providedCompile 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -42,8 +40,10 @@ java {
 // ✅ Add WAR Configuration
 war {
     archiveFileName = "IRCTC-1.0.war"
-    destinationDirectory.set(layout.buildDirectory.dir("libs")) // Updated method
+    destinationDirectory.set(layout.buildDirectory.dir("libs")) // This will make it output in build/libs
 }
+
+
 sourceSets {
     main {
         resources {
