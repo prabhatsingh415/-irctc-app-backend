@@ -2,7 +2,7 @@
 .gradle
 # Ignore Gradle build output directory
 app/.env
-
+.env
 # Ignore IntelliJ files
 .idea/
 *.iml
@@ -11,7 +11,6 @@ app/.env
 /out/
 /target/
 *.class*
-.env
 # Ignore system files
 .DS_Store
 Thumbs.db
