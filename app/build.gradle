@@ -22,7 +22,7 @@ dependencies {
 
     implementation 'com.sun.mail:jakarta.mail:2.0.1' // Ensure you're using the latest version
     implementation 'jakarta.activation:jakarta.activation-api:1.2.2' // Ensure compatibility
-    implementation 'mysql:mysql-connector-java:8.0.24'
+    implementation 'mysql:mysql-connector-java:8.0.28'
     implementation group: 'io.github.cdimascio', name: 'dotenv-java', version: '3.0.2'
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.5'
