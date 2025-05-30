@@ -18,7 +18,6 @@
 *.log
 *.tmp
 *.bak
-.env
-
 # Other
 /status
+.env
