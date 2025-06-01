@@ -8,7 +8,8 @@ import java.sql.DriverManager;
 
 public class DataBaseConfig {
     // Loading environment variables from the .env file for security purposes.
-    static Dotenv dotenv = Dotenv.load();
+    static Dotenv dotenv = Dotenv.configure().filename(".env").load();
+
 
     // Declaring the connection and credentials required to connect to the database.
     private static Connection connection;
@@ -17,7 +18,7 @@ public class DataBaseConfig {
     private static final String password = dotenv.get("DATABASE_PASSWORD");
     public static Connection createConnection() {
         try {
-            // Try to establish a connection to the database using the details from .env.
+            // Try to establish a connection to the database using the details from .env
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(url, userName, password);
 
