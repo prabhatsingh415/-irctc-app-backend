@@ -13,9 +13,7 @@ import java.util.Random;
 public class VerificationEmail {
     int code = code(); // Generates a random verification code when the object is created
 
-    Dotenv dotenv = Dotenv.configure().filename(".env").load();
-
-    String from = dotenv.get("EMAIL_USERNAME");  // Loads the sender's email from the environment variables
+    String from = System.getenv("EMAIL_USERNAME");  // Loads the sender's email from the environment variables
 
     // Method to send the verification email to the user
     public boolean sendEmail(String mail, String userName) {
