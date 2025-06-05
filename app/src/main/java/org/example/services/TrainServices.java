@@ -22,21 +22,21 @@ public class TrainServices {
         try (Connection connection = createConnection()) {
             // Loop until a train is found or the user decides to exit
                 // SQL query to find trains
-                String query = "SELECT DISTINCT t.TrainID, t.TrainName, t.TrainType, t.TotalSeats, " +
-                        "t.SourceStations, t.DestinationStation, t.DepartureTime, t.ArrivalTime " +
-                        "FROM TrainDetails t " +
-                        "JOIN TrainStation tsArrival ON t.TrainID = tsArrival.TrainID " +
-                        "JOIN StationDetails sArrival ON tsArrival.StationID = sArrival.StationID " +
-                        "JOIN TrainStation tsDestination ON t.TrainID = tsDestination.TrainID " +
-                        "JOIN StationDetails sDestination ON tsDestination.StationID = sDestination.StationID " +
-                        "WHERE LOWER(sArrival.StationName) = LOWER(?) " +
-                        "AND LOWER(sDestination.StationName) = LOWER(?) " +
-                        "AND tsArrival.StationOrder < tsDestination.StationOrder " +
-                        "AND tsArrival.StationOrder < (SELECT MAX(ts.StationOrder) " +
-                        "                             FROM TrainStation ts " +
-                        "                             WHERE ts.TrainID = t.TrainID)";
+            String query = "SELECT DISTINCT t.TrainID, t.TrainName, t.TrainType, t.TotalSeats, " +
+                    "t.SourceStations, t.DestinationStation, t.DepartureTime, t.ArrivalTime " +
+                    "FROM traindetails t " +
+                    "JOIN trainstation tsArrival ON t.TrainID = tsArrival.TrainID " +
+                    "JOIN stationdetails sArrival ON tsArrival.StationID = sArrival.StationID " +
+                    "JOIN trainstation tsDestination ON t.TrainID = tsDestination.TrainID " +
+                    "JOIN stationdetails sDestination ON tsDestination.StationID = sDestination.StationID " +
+                    "WHERE LOWER(sArrival.StationName) = LOWER(?) " +
+                    "AND LOWER(sDestination.StationName) = LOWER(?) " +
+                    "AND tsArrival.StationOrder < tsDestination.StationOrder " +
+                    "AND tsArrival.StationOrder < (SELECT MAX(ts.StationOrder) " +
+                    "                             FROM trainstation ts " +
+                    "                             WHERE ts.TrainID = t.TrainID)";
 
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                     // Set query parameters
                     preparedStatement.setString(1, arrivalStation.trim());
                     preparedStatement.setString(2, destinationStation.trim());
@@ -101,7 +101,8 @@ public class TrainServices {
     }
     public boolean isTrainIdValid(int trainId) {
         // SQL query to check if the train ID exists in the TrainDetails table
-        String query = "SELECT COUNT(*) FROM TrainDetails WHERE TrainID = ?";
+        String query = "SELECT COUNT(*) FROM traindetails WHERE TrainID = ?";
+
 
         try (Connection connection = createConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -131,7 +132,7 @@ public class TrainServices {
         stationList.clear();
         try (Connection con = createConnection();
              Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT DISTINCT SourceStations FROM TrainDetails UNION SELECT DISTINCT DestinationStation FROM TrainDetails")) {
+             ResultSet rs = stmt.executeQuery("SELECT DISTINCT SourceStations FROM traindetail SELECT DISTINCT DestinationStation FROM traindetails")) {
 
             while (rs.next()) {
                 stationList.add(rs.getString(1));

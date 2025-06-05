@@ -17,8 +17,10 @@ public class UserDao {
         String userPassword = user.getHashedPassWord();
 
         // Define SQL queries to check if the user already exists and to insert a new user
-        String insertQuery = "INSERT INTO User (UserName, UserEmail, UserPassword) VALUES (?, ?, ?)";
-        String checkUserQuery = "SELECT COUNT(*) FROM User WHERE UserName = ? AND UserEmail = ? AND UserPassword = ?";
+        String insertQuery = "INSERT INTO user (UserName, UserEmail, UserPassword) VALUES (?, ?, ?)";
+
+        String checkUserQuery = "SELECT COUNT(*) FROM user WHERE UserName = ? AND UserEmail = ? AND UserPassword = ?";
+
 
         // Try-with-resources ensures that the resources (Connection, PreparedStatement, ResultSet) are closed automatically
         try (Connection connection = createConnection();
