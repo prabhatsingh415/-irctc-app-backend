@@ -1,4 +1,4 @@
-package org.example;
+package org.example.utilities;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -17,8 +17,6 @@ public class TicketGenerator {
             // Load the background image for the ticket
 
             InputStream backgroundImage = getClass().getClassLoader().getResourceAsStream("resources/Ticket-BackgroundImage.jpg");
-//            System.out.println("File exists: " + backgroundImage.exists());
-//            System.out.println("Absolute Path: " + backgroundImage.getAbsolutePath());
             assert backgroundImage != null;
             BufferedImage image = ImageIO.read(backgroundImage);
             Graphics2D g2d = image.createGraphics();
@@ -73,9 +71,8 @@ public class TicketGenerator {
             ImageIO.write(image, "jpg", printedTicket);
 
         } catch (IOException e) {
-            // If an error occurs, display a user-friendly message
+
             System.out.println("An error occurred while generating the ticket. Please try again.");
-            e.printStackTrace();
             throw new RuntimeException(e);  // Rethrow the exception for further handling if needed
         }
         return path;  // Return the file path of the printed ticket

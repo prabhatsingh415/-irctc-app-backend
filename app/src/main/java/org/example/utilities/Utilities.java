@@ -1,4 +1,4 @@
-package org.example;
+package org.example.utilities;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -6,6 +6,8 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -73,5 +75,21 @@ public class Utilities {
             // If the date is not parsable, return false
             return false;
         }
+    }
+
+    public static String generateUniqueId() {
+        return UUID.randomUUID().toString().substring(0, 8).toUpperCase(); // generating uique
+    }
+
+    // Generate a random 4-digit verification code
+    private int code() {
+        Random random = new Random();
+        return 1000 + random.nextInt(9000); // 1000-9999
+    }
+    int code = code();
+
+    // Check if user input matches generated code
+    public boolean authenticator(int userInput) {
+        return userInput == code;
     }
 }

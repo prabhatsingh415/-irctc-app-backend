@@ -94,7 +94,6 @@ public class EmailSender {
             return true;
 
         } catch (MessagingException e) {
-            // User-friendly error message instead of stack trace
             System.err.println("Oops! Something went wrong while sending the email. Please check your internet connection or email settings, and try again.");
         }
         return false;  // Return false if sending the email fails

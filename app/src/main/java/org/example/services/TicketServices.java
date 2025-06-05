@@ -1,101 +1,81 @@
 package org.example.services;
 
-import org.example.TicketGenerator;
-import org.example.Utilities;
+import org.example.utilities.TicketGenerator;
+import org.example.utilities.Utilities;
 
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.UUID;
 
+import static org.example.utilities.Utilities.generateUniqueId;
 import static org.example.database.DataBaseConfig.createConnection;
 
 public class TicketServices {
 
-    // Method to generate a unique TicketId
-    public static String generateUniqueId() {
-        return UUID.randomUUID().toString().substring(0, 8).toUpperCase(); // Example: 1F2B3C4D
-    }
-
     // Method to book a ticket
     public void bookTicket(int trainId, String destination, String arrival, String date, String name, String email) {
-        // SQL queries for inserting a ticket, updating train seat availability, and retrieving train details
-        String query = "INSERT INTO ticket (TicketId, TicketDate, PassangerName, DateOfTravel, TrainID, Destination, Departure) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        String query2 = "UPDATE traindetails SET TotalSeats = TotalSeats - 1 WHERE TrainID = ?";
-
-        String query3 = "SELECT TrainType, ArrivalTime, DepartureTime FROM traindetails WHERE TrainID = ?";
-        // New query to retrieve train details
+        String query = "INSERT INTO ticket (TicketId, TicketDate, PassangerName, DateOfTravel, TrainID, Destination, Departure) VALUES (?, ?, ?, ?, ?, ?, ?)";//query for creating ticket
+        String query2 = "UPDATE traindetails SET TotalSeats = TotalSeats - 1 WHERE TrainID = ?"; // query to update the seats in train
+        String query3 = "SELECT TrainType, ArrivalTime, DepartureTime FROM traindetails WHERE TrainID = ?"; // query for selecting the train details
 
         try (Connection connection = createConnection()) {
-            // 1. Get train details (TrainType, ArrivalTime, DepartureTime)
-            PreparedStatement stmt = connection.prepareStatement(query3);
-            stmt.setInt(1, trainId); // Set the trainId parameter
-            ResultSet rs = stmt.executeQuery();
 
-            // Declare variables to store train details
             String trainType;
             Time arrivalTime;
             Time departureTime;
 
-            // Fetch the details from the result set
-            if (rs.next()) {
-                trainType = rs.getString("TrainType");
-                arrivalTime = rs.getTime("ArrivalTime");
-                departureTime = rs.getTime("DepartureTime");
-            } else {
-                System.out.println("No train found for Train ID: " + trainId);
-                return;  // Exit the method if no train found with the given TrainID
+            // Fetch train details
+            try (PreparedStatement stmt = connection.prepareStatement(query3)) {
+                stmt.setInt(1, trainId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        trainType = rs.getString("TrainType");
+                        arrivalTime = rs.getTime("ArrivalTime");
+                        departureTime = rs.getTime("DepartureTime");
+                    } else {
+                        System.out.println("No train found for Train ID: " + trainId);
+                        return;
+                    }
+                }
             }
 
-            // 2. Proceed with booking the ticket (Insert into ticket table and update seats)
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            // Prepare to insert ticket and update seat count
+            try (PreparedStatement psInsert = connection.prepareStatement(query);
+                 PreparedStatement psUpdate = connection.prepareStatement(query2)) {
 
-            // Convert input travelDate to java.sql.Date
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-            java.util.Date parsedTravelDate = sdf.parse(date);
-            Date sqlTravelDate = new Date(parsedTravelDate.getTime());
-            String ticketID = generateUniqueId();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                Date sqlTravelDate = new Date(sdf.parse(date).getTime());
+                String ticketID = generateUniqueId();
 
-            // Set parameters in the correct order
-            preparedStatement.setString(1, ticketID); // TicketId
-            preparedStatement.setDate(2, new Date(System.currentTimeMillis())); // Current date for TicketDate
-            preparedStatement.setString(3, name); // Passenger Name
-            preparedStatement.setDate(4, sqlTravelDate); // Date of Travel
-            preparedStatement.setInt(5, trainId); // TrainID
-            preparedStatement.setString(6, destination); // Destination
-            preparedStatement.setString(7, arrival); // Departure
+                psInsert.setString(1, ticketID);
+                psInsert.setDate(2, new Date(System.currentTimeMillis())); // Current date for TicketDate
+                psInsert.setString(3, name);
+                psInsert.setDate(4, sqlTravelDate);
+                psInsert.setInt(5, trainId);
+                psInsert.setString(6, destination);
+                psInsert.setString(7, arrival);
+                psInsert.executeUpdate();
 
-            // Execute the query to insert the ticket
-            preparedStatement.executeUpdate();
+                psUpdate.setInt(1, trainId);
+                psUpdate.executeUpdate();
 
-            // Decrement seat count for the train
-            PreparedStatement preparedStatement1 = connection.prepareStatement(query2);
-            preparedStatement1.setInt(1, trainId);
-            preparedStatement1.executeUpdate();
+                System.out.println("Ticket booked successfully!");
 
-            // Success message for ticket booking
-            System.out.println("Ticket booked successfully!");
+                // Generate and send ticket email
+                TicketGenerator ticket = new TicketGenerator();
+                String path = ticket.printTicket(ticketID, trainId, trainType, arrivalTime, departureTime, name, arrival, destination, sqlTravelDate);
 
-            // Generate and send the ticket
-            TicketGenerator ticket = new TicketGenerator();
-            String path = ticket.printTicket(ticketID, trainId, trainType,arrivalTime,departureTime,name, arrival, destination,sqlTravelDate);
-
-            VerificationEmail ticketEmail = new VerificationEmail();
-
-            // Try to send the ticket via email
-            if (ticketEmail.sendTicket(email, name, path)) {
-                // Success message for email sending
-                System.out.println("The ticket has been sent to your email address.");
-                Utilities.deleteTicket(); // Delete the ticket after sending email
-            } else {
-                // Error message if email sending fails
-                System.out.println("Something went wrong while sending the ticket. Please try again.");
+                VerificationEmail ticketEmail = new VerificationEmail();
+                if (ticketEmail.sendTicket(email, name, path)) {
+                    System.out.println("The ticket has been sent to your email address.");
+                    Utilities.deleteTicket();
+                } else {
+                    System.out.println("Something went wrong while sending the ticket. Please try again.");
+                }
             }
 
         } catch (SQLException | ParseException e) {
-            System.err.println("Error: There was an issue while booking the ticket. Please check your input or database connection.");
+            System.err.println("Error booking ticket: " + e.getMessage());
         }
     }
 
@@ -103,41 +83,33 @@ public class TicketServices {
     public boolean cancelTicket(String ticketId) {
         String query = "DELETE FROM ticket WHERE TicketId = ?";
 
-        try (Connection connection = createConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, ticketId);
+        try (Connection connection = createConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            // Execute the query to delete the ticket
+            preparedStatement.setString(1, ticketId);
             int rowsAffected = preparedStatement.executeUpdate();
 
-            // If the ticket is deleted successfully, return true (canceled)
-            if (rowsAffected > 0) {
-                return true; // Ticket successfully canceled
-            }
+            return rowsAffected > 0;
 
         } catch (SQLException e) {
-            // Error handling with user-friendly message
             System.err.println("Error: There was an issue while canceling the ticket. Please try again.");
             throw new RuntimeException(e);
         }
-        // Return false if no ticket was found
-        return false;
     }
 
+    // Method to check if a ticket ID is valid (exists in DB)
     public boolean isTicketIdValid(String ticketId) {
         String query = "SELECT TrainID FROM ticket WHERE TicketId = ?";
 
         try (Connection connection = createConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
-
             stmt.setString(1, ticketId);
-            ResultSet rs = stmt.executeQuery();
-
-            return rs.next();
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+
             return false;
         }
     }
-
 }

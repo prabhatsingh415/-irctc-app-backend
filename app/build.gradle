@@ -29,6 +29,8 @@ dependencies {
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:11.0.5'
     implementation 'org.apache.tomcat.embed:tomcat-embed-el:11.0.5'
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.zaxxer:HikariCP:6.3.0'
+    implementation 'org.slf4j:slf4j-simple:1.7.36'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

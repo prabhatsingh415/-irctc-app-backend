@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.example.Utilities;
+import org.example.utilities.Utilities;
 import org.example.services.TicketServices;
 import org.example.services.TrainServices;
 
