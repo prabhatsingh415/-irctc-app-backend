@@ -13,9 +13,9 @@ public class DataBaseConfig {
 
     // Declaring the connection and credentials required to connect to the database.
     private static Connection connection;
-    private static final String url = dotenv.get("DATABASE_URL");  // Get URL directly from .env file
-    private static final String userName = dotenv.get("DATABASE_USERNAME", "root");
-    private static final String password = dotenv.get("DATABASE_PASSWORD");
+    private static final String url = System.getenv("DATABASE_URL");  // Get URL directly from .env file
+    private static final String userName = System.getenv("DATABASE_USERNAME");
+    private static final String password = System.getenv("DATABASE_PASSWORD");
     public static Connection createConnection() {
         try {
             // Try to establish a connection to the database using the details from .env
