@@ -20,9 +20,13 @@ public class TicketServices {
     // Method to book a ticket
     public void bookTicket(int trainId, String destination, String arrival, String date, String name, String email) {
         // SQL queries for inserting a ticket, updating train seat availability, and retrieving train details
-        String query = "INSERT INTO ticket (TicketId, TicketDate, PassangerName, DateOfTravel, TrainID, Destination, Departure) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        String query2 = "UPDATE TrainDetails SET TotalSeats = TotalSeats - 1 WHERE trainId = ?;";
-        String query3 = "SELECT TrainType, ArrivalTime, DepartureTime FROM TrainDetails WHERE TrainID = ?";  // New query to retrieve train details
+        String query = "INSERT INTO ticket (TicketId, TicketDate, PassangerName, DateOfTravel, TrainID, Destination, Departure) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        String query2 = "UPDATE traindetails SET TotalSeats = TotalSeats - 1 WHERE TrainID = ?";
+
+        String query3 = "SELECT TrainType, ArrivalTime, DepartureTime FROM traindetails WHERE TrainID = ?";
+        // New query to retrieve train details
 
         try (Connection connection = createConnection()) {
             // 1. Get train details (TrainType, ArrivalTime, DepartureTime)
