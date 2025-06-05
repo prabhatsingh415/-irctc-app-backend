@@ -18,6 +18,9 @@ public class DataBaseConfig {
         if(url==null || userName==null || password==null){
             throw new RuntimeException("Database environment variables are not set.");
         }
+        System.out.println("DB_URL = " + url);
+        System.out.println("DB_USER = " + userName);
+        System.out.println("DB_PASSWORD = " + password);
     }
     public static Connection createConnection() {
         try {
@@ -27,6 +30,7 @@ public class DataBaseConfig {
 
         } catch (Exception e) {
             // Provide a user-friendly error message.
+            e.printStackTrace();
             System.out.println("Oops! Something went wrong while connecting to the database. Please try again later.");
             // Optionally, you can log this exception in a file or send a report to admin.
         }
