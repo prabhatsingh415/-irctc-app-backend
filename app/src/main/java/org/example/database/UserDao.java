@@ -1,14 +1,12 @@
 package org.example.database;
 
-import org.example.Utilities;
+import org.example.utilities.Utilities;
 import org.example.entities.User;
-
 import java.sql.*;
 
 import static org.example.database.DataBaseConfig.createConnection;
 
 public class UserDao {
-    Utilities utilities = new Utilities();
     // Method to register a new user
     public void registerUser(User user) {
         String userName = user.getName();
@@ -19,7 +17,7 @@ public class UserDao {
         String checkUserQuery = "SELECT COUNT(*) FROM user WHERE UserName = ? AND UserEMAIL = ?";
         String insertQuery = "INSERT INTO user (UserName, UserEMAIL, UserPassword) VALUES (?, ?, ?)";
 
-        try (Connection connection = createConnection();
+        try (Connection connection = DataBaseConfig.createConnection();
              PreparedStatement checkStatement = connection.prepareStatement(checkUserQuery);
              PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
 
@@ -36,11 +34,10 @@ public class UserDao {
                     // Insert new user
                     insertStatement.setString(1, userName);
                     insertStatement.setString(2, userEmail);
-                    insertStatement.setString(3, userPassword); // Already hashed before passing to this method
+                    insertStatement.setString(3, userPassword);
                     insertStatement.executeUpdate();
 
                     System.out.println("Sign Up Successfully!");
-                    new HomePage().displayHomePage(userEmail);
                 } else {
                     System.out.println("User already exists.");
                 }
@@ -54,30 +51,27 @@ public class UserDao {
 
     // Method to log in a user
     public boolean login(String email, String password) {
-        String hashedPassword = null; // To store the fetched hashed password from the database
-
-        // SQL query to get the stored password for the given email
+        String hashedPassword = null;
         String query = "SELECT UserPassword FROM user WHERE UserEMAIL = ?";
 
-        // Try-with-resources ensures connection is closed automatically after usage
-        try (Connection connection = createConnection()) {
-            PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
+        try (Connection connection = createConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
 
-            if (!rs.next()) {
-                // If no matching email is found, show a user-friendly message
-                System.out.println("Invalid email or password");
-            } else {
-                // If the email is found, retrieve the hashed password from the database
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    System.out.println("Invalid email or password");
+                    return false;
+                }
                 hashedPassword = rs.getString("UserPassword");
             }
+
         } catch (SQLException e) {
-            // Catch SQL exceptions and show a user-friendly message
             System.out.println("An error occurred while logging in. Please try again later.");
+            return false;
         }
 
-        // Return the result of the password check (whether the provided password matches the stored hashed password)
+        if (hashedPassword == null) return false;
         return Utilities.checkPassword(password, hashedPassword);
     }
 }

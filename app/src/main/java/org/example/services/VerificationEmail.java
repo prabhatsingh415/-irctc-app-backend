@@ -1,14 +1,12 @@
 package org.example.services;
 
-import io.github.cdimascio.dotenv.Dotenv;
-
 import static org.example.database.DataBaseConfig.createConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
-
 
 public class VerificationEmail {
     int code = code(); // Generates a random verification code when the object is created
@@ -17,7 +15,6 @@ public class VerificationEmail {
 
     // Method to send the verification email to the user
     public boolean sendEmail(String mail, String userName) {
-        // Email subject and message content with dynamic userName and verification code
         String subject = "Verification E-Mail";
         String message = "Dear " + userName +
                 ",\n\nWelcome to IRCTC Ticket Booking App! To complete your sign-up process, we just need to verify your email address. Here is your verification code: **" +
@@ -28,25 +25,19 @@ public class VerificationEmail {
                 "The IRCTC - Ticket Booking App Team\n" +
                 "Email :- singh.prabhat.work@gmail.com\n";
 
-        // Create an instance of EmailSender to send the email
         EmailSender emailSender = new EmailSender(from);
-
-        // Attempt to send the email and return the result
         boolean success = emailSender.sendEmail(mail, subject, message, null);
 
-        // Check if email was sent successfully and display the appropriate message
         if (success) {
             System.out.println("Verification email sent successfully!");
         } else {
             System.err.println("Error: We couldn't send the verification email. Please check your email settings and try again.");
         }
-
-        return success; // Return the result of email sending
+        return success;
     }
 
-    // Method to send the ticket confirmation email to the user with the attached ticket
+    // Method to send the ticket confirmation email with attachment
     public boolean sendTicket(String mail, String user, String path) {
-        // Email subject and message content with dynamic userName
         String subject = "Your Ticket Confirmation";
         String message = "Dear " + user +
                 "\n" +
@@ -63,48 +54,43 @@ public class VerificationEmail {
                 "contact :- singh.prabhat.work@gmail.com\n" +
                 "IRCTC-TICKET_BOOKING_APP\n";
 
-        // Create an instance of EmailSender to send the ticket email
         EmailSender emailSender = new EmailSender(from);
-
-        // Attempt to send the email with the ticket attachment and return the result
         boolean success = emailSender.sendEmail(mail, subject, message, path);
 
-        // Check if email was sent successfully and display the appropriate message
         if (success) {
             System.out.println("Ticket confirmation email sent successfully!");
         } else {
             System.err.println("Error: We couldn't send the ticket confirmation email. Please try again.");
         }
-
-        return success; // Return the result of email sending
+        return success;
     }
 
-    // Method to generate a random 4-digit verification code
+    // Generate a random 4-digit verification code
     private int code() {
         Random random = new Random();
-        return 1000 + random.nextInt(9000); // Generates a number between 1000 and 9999
+        return 1000 + random.nextInt(9000); // 1000-9999
     }
 
-    // Method to authenticate the user by comparing the user input with the generated code
+    // Check if user input matches generated code
     public boolean authenticator(int userInput) {
-        return userInput == code; // Check if user input matches the generated code
+        return userInput == code;
     }
 
-    public boolean isEmailAvailable(String email){
-        try(Connection connection = createConnection()){
-            String query = "SELECT EXISTS (\n" +
-                    "    SELECT 1 \n" +
-                    "    FROM user\n" +
-                    "    WHERE userEMAIL = ?\n" +
-                    ");\n";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1,email);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                // Return true if the email is NOT available (does not exist), otherwise false
-                return !resultSet.getBoolean(1); // Flip the result
+    // Check if email is available (not used by any user)
+    public boolean isEmailAvailable(String email) {
+        String query = "SELECT EXISTS (SELECT 1 FROM user WHERE userEMAIL = ?)";
+
+        try (Connection connection = createConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, email);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    // Return true if email does NOT exist (available), false otherwise
+                    return !resultSet.getBoolean(1);
+                }
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println("An error occurred while checking email availability. Please contact support or try again later.");
         }
         return false;
