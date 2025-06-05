@@ -7,12 +7,9 @@ import java.sql.DriverManager;
 
 
 public class DataBaseConfig {
-    // Loading environment variables from the .env file for security purposes.
-    static Dotenv dotenv = Dotenv.configure().filename(".env").load();
-
-
     // Declaring the connection and credentials required to connect to the database.
     private static Connection connection;
+
     private static final String url = System.getenv("DATABASE_URL");  // Get URL directly from .env file
     private static final String userName = System.getenv("DATABASE_USERNAME");
     private static final String password = System.getenv("DATABASE_PASSWORD");
