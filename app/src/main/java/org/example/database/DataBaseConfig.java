@@ -13,6 +13,12 @@ public class DataBaseConfig {
     private static final String url = System.getenv("DATABASE_URL");  // Get URL directly from .env file
     private static final String userName = System.getenv("DATABASE_USERNAME");
     private static final String password = System.getenv("DATABASE_PASSWORD");
+
+    static {
+        if(url==null || userName==null || password==null){
+            throw new RuntimeException("Database environment variables are not set.");
+        }
+    }
     public static Connection createConnection() {
         try {
             // Try to establish a connection to the database using the details from .env
