@@ -101,7 +101,7 @@ public class TicketServices {
 
     // Method to cancel a ticket by its TicketId
     public boolean cancelTicket(String ticketId) {
-        String query = "DELETE FROM ticket WHERE ticketId = ?";
+        String query = "DELETE FROM ticket WHERE TicketId = ?";
 
         try (Connection connection = createConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(query);

@@ -36,6 +36,7 @@ public class TrainServices {
                     "                             FROM trainstation ts " +
                     "                             WHERE ts.TrainID = t.TrainID)";
 
+
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                     // Set query parameters
                     preparedStatement.setString(1, arrivalStation.trim());
@@ -75,10 +76,11 @@ public class TrainServices {
     private List<String> getStationsForTrain(int trainId, Connection connection) {
         // SQL query to get the station names for a specific train, ordered by the station order
         String query = "SELECT s.StationName " +
-                "FROM StationDetails s " +
-                "JOIN TrainStation ts ON s.StationID = ts.StationID " +
+                "FROM stationdetails s " +
+                "JOIN trainstation ts ON s.StationID = ts.StationID " +
                 "WHERE ts.TrainID = ? " +
-                "ORDER BY ts.StationOrder"; // Ensure stations are printed in the correct order
+                "ORDER BY ts.StationOrder";
+        // Ensure stations are printed in the correct order
         List<String> stations = new ArrayList<>();
 
         // Try-with-resources to automatically close the PreparedStatement and ResultSet
@@ -130,9 +132,13 @@ public class TrainServices {
 
     public void loadStationsFromDB() {
         stationList.clear();
+        String query = "SELECT DISTINCT SourceStations FROM traindetails " +
+                "UNION " +
+                "SELECT DISTINCT DestinationStation FROM traindetails";
+
         try (Connection con = createConnection();
              Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT DISTINCT SourceStations FROM traindetail SELECT DISTINCT DestinationStation FROM traindetails")) {
+             ResultSet rs = stmt.executeQuery(query)) {
 
             while (rs.next()) {
                 stationList.add(rs.getString(1));

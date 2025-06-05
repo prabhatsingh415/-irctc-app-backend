@@ -20,10 +20,9 @@ public class EmailSender {
     // Constructor to initialize sender email and app password from the .env file
     public EmailSender(String fromEmail) {
         this.fromEmail = fromEmail;
-        Dotenv dotenv = Dotenv.configure().directory("C:\\Users\\acer\\Irctc\\app\\.env").load();
 
         // Retrieve the app password from the .env file
-        this.appPassword = dotenv.get("EMAIL_APP_PASSWORD");
+        this.appPassword = System.getenv("EMAIL_APP_PASSWORD");
 
         // Throw an exception if app password is not found
         if (this.appPassword == null) {
