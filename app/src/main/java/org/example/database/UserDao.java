@@ -2,59 +2,55 @@ package org.example.database;
 
 import org.example.Utilities;
 import org.example.entities.User;
-import org.example.page.HomePage;
 
 import java.sql.*;
 
 import static org.example.database.DataBaseConfig.createConnection;
 
 public class UserDao {
-
+    Utilities utilities = new Utilities();
     // Method to register a new user
     public void registerUser(User user) {
         String userName = user.getName();
         String userEmail = user.getMail();
         String userPassword = user.getHashedPassWord();
 
-        // Define SQL queries to check if the user already exists and to insert a new user
-        String insertQuery = "INSERT INTO user (UserName, UserEmail, UserPassword) VALUES (?, ?, ?)";
 
-        String checkUserQuery = "SELECT COUNT(*) FROM user WHERE UserName = ? AND UserEmail = ? AND UserPassword = ?";
+        String checkUserQuery = "SELECT COUNT(*) FROM user WHERE UserName = ? AND UserEMAIL = ?";
+        String insertQuery = "INSERT INTO user (UserName, UserEMAIL, UserPassword) VALUES (?, ?, ?)";
 
-
-        // Try-with-resources ensures that the resources (Connection, PreparedStatement, ResultSet) are closed automatically
         try (Connection connection = createConnection();
              PreparedStatement checkStatement = connection.prepareStatement(checkUserQuery);
-             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+             PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
 
-            // Set parameters for the query that checks if the user exists
+            // Set parameters for check query
             checkStatement.setString(1, userName);
             checkStatement.setString(2, userEmail);
-            checkStatement.setString(3, userPassword);
 
-            // Execute the query to check if the user already exists
             ResultSet resultSet = checkStatement.executeQuery();
+
             if (resultSet.next()) {
                 int count = resultSet.getInt(1);
 
-                HomePage homePage = new HomePage();
                 if (count == 0) {
-                    // If the user does not exist, insert a new user into the database
-                    preparedStatement.setString(1, userName);
-                    preparedStatement.setString(2, userEmail);
-                    preparedStatement.setString(3, userPassword);
-                    preparedStatement.executeUpdate();
-                    System.out.println("Sign Up Successfully!"); // Success message
-                    homePage.displayHomePage(userEmail); // Redirect to home page
+                    // Insert new user
+                    insertStatement.setString(1, userName);
+                    insertStatement.setString(2, userEmail);
+                    insertStatement.setString(3, userPassword); // Already hashed before passing to this method
+                    insertStatement.executeUpdate();
+
+                    System.out.println("Sign Up Successfully!");
+                    new HomePage().displayHomePage(userEmail);
                 } else {
-                    System.out.println("User already exists."); // If user already exists, show a message
+                    System.out.println("User already exists.");
                 }
             }
+
         } catch (SQLException e) {
-            // Catch any SQL exceptions and show a user-friendly message
             System.out.println("Error occurred while registering the user. Please try again later.");
         }
     }
+
 
     // Method to log in a user
     public boolean login(String email, String password) {
