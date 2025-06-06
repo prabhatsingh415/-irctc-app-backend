@@ -3,12 +3,10 @@ package org.example;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.filters.CorsFilter;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
-import org.apache.tomcat.util.descriptor.web.FilterDef;
-import org.apache.tomcat.util.descriptor.web.FilterMap;
+
 
 import java.io.File;
 
@@ -33,20 +31,6 @@ public class App {
                 Context ctx = tomcat.addWebapp("", new File(webappDir).getAbsolutePath());
 
 
-                FilterDef corsFilterDef = getFilterDef();
-
-                // Add filter definition to context
-                        ctx.addFilterDef(corsFilterDef);
-
-                        // Create filter mapping
-                        FilterMap corsFilterMap = new FilterMap();
-                        corsFilterMap.setFilterName("corsFilter");
-                        corsFilterMap.addURLPattern("/*");  // apply filter to all URLs
-
-                        // Add filter mapping to context
-                        ctx.addFilterMap(corsFilterMap);
-
-
         // Add compiled classes (Gradle builds to build/classes/java/main)
                 String classesDir = "app/build/classes/java/main";
                 StandardRoot resources = new StandardRoot(ctx);
@@ -60,14 +44,4 @@ public class App {
                 // Keep server running
                 tomcat.getServer().await();
             }
-
-    private static FilterDef getFilterDef() {
-        FilterDef corsFilterDef = new FilterDef();
-        corsFilterDef.setFilterName("corsFilter");
-        corsFilterDef.setFilter(new CorsFilter());
-        corsFilterDef.addInitParameter("cors.allowed.origins", "*");
-        corsFilterDef.addInitParameter("cors.allowed.methods", "GET,POST,HEAD,OPTIONS,PUT");
-        corsFilterDef.addInitParameter("cors.allowed.headers", "Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization");
-        return corsFilterDef;
-    }
 }
