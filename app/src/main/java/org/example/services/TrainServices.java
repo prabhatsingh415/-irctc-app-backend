@@ -22,23 +22,37 @@ public class TrainServices {
         List<Train> trainList = new ArrayList<>();
         String jsonData;
 
-        String query = "SELECT DISTINCT t.TrainID, t.TrainName, t.TrainType, t.TotalSeats, " +
-                "t.SourceStations, t.DestinationStation, t.DepartureTime, t.ArrivalTime " +
-                "FROM traindetails t " +
-                "JOIN trainstation tsArrival ON t.TrainID = tsArrival.TrainID " +
-                "JOIN stationdetails sArrival ON tsArrival.StationID = sArrival.StationID " +
-                "JOIN trainstation tsDestination ON t.TrainID = tsDestination.TrainID " +
-                "JOIN stationdetails sDestination ON tsDestination.StationID = sDestination.StationID " +
-                "WHERE LOWER(sArrival.StationName) = LOWER(?) " +
-                "AND LOWER(sDestination.StationName) = LOWER(?) " +
-                "AND tsArrival.StationOrder < tsDestination.StationOrder " +
-                "AND tsArrival.StationOrder < (SELECT MAX(ts.StationOrder) FROM trainstation ts WHERE ts.TrainID = t.TrainID)";
+        String query = """
+                (
+                SELECT DISTINCT t.TrainID, t.TrainName, t.TrainType, t.TotalSeats,
+                t.SourceStations, t.DestinationStation, t.DepartureTime, t.ArrivalTime
+                FROM traindetails t
+                WHERE LOWER(t.SourceStations) = LOWER(?)
+                AND LOWER(t.DestinationStation) = LOWER(?)
+        )
+                UNION
+                        (
+                                SELECT DISTINCT t.TrainID, t.TrainName, t.TrainType, t.TotalSeats,
+                                t.SourceStations, t.DestinationStation, t.DepartureTime, t.ArrivalTime
+                                FROM traindetails t
+                                JOIN trainstation tsArrival ON t.TrainID = tsArrival.TrainID
+                                JOIN stationdetails sArrival ON tsArrival.StationID = sArrival.StationID
+                                JOIN trainstation tsDestination ON t.TrainID = tsDestination.TrainID
+                                JOIN stationdetails sDestination ON tsDestination.StationID = sDestination.StationID
+                                WHERE LOWER(sArrival.StationName) = LOWER(?)
+                AND LOWER(sDestination.StationName) = LOWER(?)
+                AND tsArrival.StationOrder < tsDestination.StationOrder
+          )
+           """;
 
         try (Connection connection = createConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            preparedStatement.setString(1, arrivalStation.trim());
-            preparedStatement.setString(2, destinationStation.trim());
+            preparedStatement.setString(1, arrivalStation.trim());  // for direct match (query part 1)
+            preparedStatement.setString(2, destinationStation.trim()); // for direct match (query part 1)
+            preparedStatement.setString(3, arrivalStation.trim());  // for intermediate check (query part 2)
+            preparedStatement.setString(4, destinationStation.trim()); // for intermediate check (query part 2)
+
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (!resultSet.next()) {
@@ -66,7 +80,6 @@ public class TrainServices {
 
             jsonData = new Gson().toJson(trainList);
         } catch (SQLException e) {
-            e.printStackTrace();
             return "An error occurred while searching for trains. Please try again later.";
         }
 
