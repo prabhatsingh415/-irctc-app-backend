@@ -16,10 +16,15 @@ public class BookTicketServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        HttpSession session = req.getSession(false); // false so it doesn't create a new session
+
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
-        HttpSession session = req.getSession();
+        if (session == null || session.getAttribute("userEmail") == null) {
+            resp.getWriter().write("{\"success\": false, \"message\": \"User not logged in. Please login first.\"}");
+            return;
+        }
 
         String step = req.getParameter("step");  // Step to determine the stage of input
         String jsonResponse;
@@ -55,13 +60,23 @@ public class BookTicketServlet extends HttpServlet {
         if ("passengerName".equals(step)) {
             // Step 3: Get Passenger Name and Book Ticket
             String name = req.getParameter("name");
+            String source = req.getParameter("src");
+            String destination = req.getParameter("dest");
+
+            if (name == null || source == null || destination == null ||
+                    name.trim().isEmpty() || source.trim().isEmpty() || destination.trim().isEmpty()) {
+                jsonResponse = "{\"success\": false, \"message\": \"All fields (name, source, destination) are required.\"}";
+                resp.getWriter().write(jsonResponse);
+                return;
+            }
+
             String email = (String) session.getAttribute("userEmail"); // Assuming email is stored in session
             int trainId = (int) session.getAttribute("trainId");
             String dateOfTravel = (String) session.getAttribute("dateOfTravel");
 
-            ticketServices.bookTicket(trainId, "Destination", "Origin", dateOfTravel, name, email);
+            ticketServices.bookTicket(trainId, source, destination, dateOfTravel, name, email);
 
-            jsonResponse = "{\"success\": true, \"message\": \"Ticket booked successfully!\"}";
+            jsonResponse = "{\"success\": true, \"message\": \"Ticket booked successfully and sent to your email!\"}";
             resp.getWriter().write(jsonResponse);
         }
     }
