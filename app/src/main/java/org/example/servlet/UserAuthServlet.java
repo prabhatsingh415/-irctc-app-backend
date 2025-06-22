@@ -14,7 +14,7 @@ public class UserAuthServlet extends HttpServlet {
     VerificationEmail mail = new VerificationEmail();
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 

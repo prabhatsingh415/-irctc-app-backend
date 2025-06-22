@@ -91,6 +91,7 @@ public class VerificationEmail {
                 }
             }
         } catch (SQLException e) {
+
             System.out.println("An error occurred while checking email availability. Please contact support or try again later.");
         }
         return false;
