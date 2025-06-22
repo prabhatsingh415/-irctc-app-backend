@@ -21,14 +21,15 @@ public class EmailSender {
     public EmailSender(String fromEmail) {
         this.fromEmail = fromEmail;
 
-        // Retrieve the app password from the .env file
         this.appPassword = System.getenv("EMAIL_APP_PASSWORD");
 
-        // Throw an exception if app password is not found
+        System.out.println("Loaded EMAIL_APP_PASSWORD: " + (appPassword != null ? "✔️ Loaded" : "❌ Not Found"));
+
         if (this.appPassword == null) {
-            throw new RuntimeException("Something Went Wrong,Please Try Again Later!");
+            throw new RuntimeException("EMAIL_APP_PASSWORD not found! Please check Render env variables.");
         }
     }
+
 
     // Method to configure session properties for sending emails
     private Session configureSession() {
@@ -94,7 +95,8 @@ public class EmailSender {
             return true;
 
         } catch (MessagingException e) {
-            e.printStackTrace();
+            System.out.println("Attempting to send email to: " + to);
+            System.err.println("MessagingException: " + e.getMessage());
             System.err.println("Oops! Something went wrong while sending the email. Please check your internet connection or email settings, and try again.");
         }
         return false;  // Return false if sending the email fails
