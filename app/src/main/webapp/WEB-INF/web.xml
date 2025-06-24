@@ -74,29 +74,29 @@
         <filter-name>CorsFilter</filter-name>
         <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
 
-        <!-- ✅ Allow only frontend origin -->
+        <!-- Allow BOTH localhost and 127.0.0.1 -->
         <init-param>
             <param-name>cors.allowed.origins</param-name>
-            <param-value>http://localhost:3000</param-value> <!-- Replace if using different port -->
+            <param-value>
+                http://localhost:3000,http://127.0.0.1:3000
+            </param-value>
         </init-param>
 
-        <!-- ✅ Allow cookies/sessions -->
         <init-param>
             <param-name>cors.support.credentials</param-name>
             <param-value>true</param-value>
         </init-param>
 
-        <!-- ✅ Allow required HTTP methods -->
         <init-param>
             <param-name>cors.allowed.methods</param-name>
             <param-value>GET,POST,HEAD,OPTIONS,PUT</param-value>
         </init-param>
 
-        <!-- ✅ Allow common headers -->
         <init-param>
             <param-name>cors.allowed.headers</param-name>
             <param-value>Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization</param-value>
         </init-param>
+
     </filter>
 
     <filter-mapping>
