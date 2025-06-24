@@ -16,6 +16,6 @@ public class AppTest {
 
     public static void main(String[] args) {
         VerificationEmail mail = new VerificationEmail();
-        mail.sendEmail(" dadade8455@cristout.com","psr");
+//        mail.sendEmail(" dadade8455@cristout.com","psr");
     }
 }

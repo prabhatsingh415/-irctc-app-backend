@@ -66,17 +66,33 @@
         <url-pattern>/cancelTicket</url-pattern>
     </servlet-mapping>
 
+    <session-config>
+        <session-timeout>30</session-timeout> <!-- 30 minutes -->
+    </session-config>
+
     <filter>
         <filter-name>CorsFilter</filter-name>
         <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+
+        <!-- ✅ Allow only frontend origin -->
         <init-param>
             <param-name>cors.allowed.origins</param-name>
-            <param-value>*</param-value>
+            <param-value>http://localhost:3000</param-value> <!-- Replace if using different port -->
         </init-param>
+
+        <!-- ✅ Allow cookies/sessions -->
+        <init-param>
+            <param-name>cors.support.credentials</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <!-- ✅ Allow required HTTP methods -->
         <init-param>
             <param-name>cors.allowed.methods</param-name>
             <param-value>GET,POST,HEAD,OPTIONS,PUT</param-value>
         </init-param>
+
+        <!-- ✅ Allow common headers -->
         <init-param>
             <param-name>cors.allowed.headers</param-name>
             <param-value>Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization</param-value>
@@ -87,6 +103,7 @@
         <filter-name>CorsFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
 
 </web-app>
 

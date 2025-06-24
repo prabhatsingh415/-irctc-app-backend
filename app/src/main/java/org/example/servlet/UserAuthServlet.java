@@ -18,6 +18,13 @@ public class UserAuthServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
+        // CORS Headers (as discussed earlier, assuming already added)
+        String origin = req.getHeader("Origin");
+        if (origin != null && origin.equals("http://localhost:your-port")) { // Replace with your frontend origin
+            resp.setHeader("Access-Control-Allow-Origin", origin);
+            resp.setHeader("Access-Control-Allow-Credentials", "true");
+        }
+
         HttpSession session = req.getSession(true);
         String step = req.getParameter("step");  // This determines the action
 
@@ -30,7 +37,7 @@ public class UserAuthServlet extends HttpServlet {
             session.setAttribute("userEmail", userEmail);
 
             if (mail.isEmailAvailable(userEmail)) {
-                if (mail.sendEmail(userEmail, userName)) {
+                if (mail.sendEmail(userEmail, userName, session)) { // Pass session
                     resp.getWriter().write("{\"success\": true, \"message\": \"Email sent successfully. Enter verification code.\"}");
                 } else {
                     resp.getWriter().write("{\"success\": false, \"message\": \"Error sending email. Try again later.\"}");
@@ -41,13 +48,19 @@ public class UserAuthServlet extends HttpServlet {
 
         } else if ("verifyCode".equals(step)) {
             // ✅ Step 2: Verify OTP
-            int userInputCode = Integer.parseInt(req.getParameter("InputCode"));
+            int userInputCode;
+            try {
+                userInputCode = Integer.parseInt(req.getParameter("InputCode"));
+            } catch (NumberFormatException e) {
+                resp.getWriter().write("{\"success\": false, \"message\": \"Invalid verification code format.\"}");
+                return;
+            }
 
-            if (mail.authenticator(userInputCode)) {
+            if (mail.authenticator(userInputCode, session)) { // Pass session
                 session.setAttribute("emailVerified", true);
-                resp.getWriter().write("{\"success\": true, \"message\": \"Email verified. Enter your password.\"}");
+                resp.getWriter().println("{\"success\": \"true\", \"message\": \"Email verified. Enter your password.\"}");
             } else {
-                resp.getWriter().write("{\"success\": false, \"message\": \"Invalid verification code.\"}");
+                resp.getWriter().println("{\"success\": \"false\", \"message\": \"Invalid verification code.\"}");
             }
 
         } else if ("setPassword".equals(step)) {
@@ -55,23 +68,24 @@ public class UserAuthServlet extends HttpServlet {
             Boolean isVerified = (Boolean) session.getAttribute("emailVerified");
 
             if (isVerified == null || !isVerified) {
-                resp.getWriter().write("{\"success\": false, \"message\": \"Email verification required.\"}");
+                resp.getWriter().write("{\"success\": \"false\", \"message\": \"Email verification required.\"}");
                 return;
             }
 
             String password = req.getParameter("password");
             session.setAttribute("password", password);
 
-            resp.getWriter().write("{\"success\": true, \"message\": \"Password set successfully. Signup complete!\"}");
+            resp.getWriter().write("{\"success\": \"true\", \"message\": \"Password set successfully! Signup complete.\"}");
 
-            //creating a new user
+            // Creating a new user
             String userName = (String) session.getAttribute("userName");
             String userEmail = (String) session.getAttribute("userEmail");
             String userPassword = (String) session.getAttribute("password");
-            String hashedPassword =  Utilities.passwordEncryptor(userPassword);
+            String hashedPassword = Utilities.passwordEncryptor(userPassword);
             UserDao userDao = new UserDao();
             User user = new User(userName, userEmail, hashedPassword);
             userDao.registerUser(user);
         }
+
     }
 }
