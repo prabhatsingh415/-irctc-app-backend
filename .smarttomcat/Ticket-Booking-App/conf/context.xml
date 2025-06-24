@@ -28,4 +28,5 @@
     <!--
     <Manager pathname="SESSIONS.ser" />
     -->
+    <CookieProcessor sameSiteCookies="None" />
 </Context>

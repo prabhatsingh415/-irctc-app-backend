@@ -19,10 +19,10 @@ public class UserAuthServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         HttpSession session = req.getSession(true);
-        String step = req.getParameter("step");  // This determines the action
+        System.out.println("Step: " + req.getParameter("step") + ", Session ID: " + session.getId()); // Debugging
+        String step = req.getParameter("step");
 
         if ("sendEmail".equals(step)) {
-            // ✅ Step 1: Send Verification Email
             String userName = req.getParameter("userName");
             String userEmail = req.getParameter("userEmail");
 
@@ -30,7 +30,7 @@ public class UserAuthServlet extends HttpServlet {
             session.setAttribute("userEmail", userEmail);
 
             if (mail.isEmailAvailable(userEmail)) {
-                if (mail.sendEmail(userEmail, userName, session)) { // Pass session
+                if (mail.sendEmail(userEmail, userName, session)) {
                     resp.getWriter().write("{\"success\": true, \"message\": \"Email sent successfully. Enter verification code.\"}");
                 } else {
                     resp.getWriter().write("{\"success\": false, \"message\": \"Error sending email. Try again later.\"}");
@@ -38,10 +38,9 @@ public class UserAuthServlet extends HttpServlet {
             } else {
                 resp.getWriter().write("{\"success\": false, \"message\": \"Email already registered.\"}");
             }
-
         } else if ("verifyCode".equals(step)) {
             String inputCodeStr = req.getParameter("InputCode");
-            System.out.println("Received InputCode: " + inputCodeStr); // Debugging
+            System.out.println("Received InputCode: " + inputCodeStr);
             int userInputCode;
             try {
                 userInputCode = Integer.parseInt(inputCodeStr);
@@ -68,15 +67,14 @@ public class UserAuthServlet extends HttpServlet {
 
             resp.getWriter().write("{\"success\": true, \"message\": \"Password set successfully! Signup complete.\"}");
 
-            // Creating a new user
             String userName = (String) session.getAttribute("userName");
-            String userEmail = (String) session.getAttribute("userEmail"); // Fixed typo: sessio -> session
+            String userEmail = (String) session.getAttribute("userEmail");
             String userPassword = (String) session.getAttribute("password");
             String hashedPassword = Utilities.passwordEncryptor(userPassword);
             UserDao userDao = new UserDao();
             User user = new User(userName, userEmail, hashedPassword);
             userDao.registerUser(user);
         }
-
     }
+
 }
