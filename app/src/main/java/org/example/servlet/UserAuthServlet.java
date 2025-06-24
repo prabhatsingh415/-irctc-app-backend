@@ -19,7 +19,7 @@ public class UserAuthServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         HttpSession session = req.getSession(true);
-        System.out.println("Step: " + req.getParameter("step") + ", Session ID: " + session.getId()); // Debugging
+        System.out.println("Step: " + req.getParameter("step") + ", Session ID: " + session.getId());
         String step = req.getParameter("step");
 
         if ("sendEmail".equals(step)) {
@@ -76,5 +76,4 @@ public class UserAuthServlet extends HttpServlet {
             userDao.registerUser(user);
         }
     }
-
 }
