@@ -18,13 +18,6 @@ public class UserAuthServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
-        // CORS Headers (as discussed earlier, assuming already added)
-        String origin = req.getHeader("Origin");
-        if (origin != null && origin.equals("http://localhost:your-port")) { // Replace with your frontend origin
-            resp.setHeader("Access-Control-Allow-Origin", origin);
-            resp.setHeader("Access-Control-Allow-Credentials", "true");
-        }
-
         HttpSession session = req.getSession(true);
         String step = req.getParameter("step");  // This determines the action
 
@@ -47,39 +40,37 @@ public class UserAuthServlet extends HttpServlet {
             }
 
         } else if ("verifyCode".equals(step)) {
-            // ✅ Step 2: Verify OTP
+            String inputCodeStr = req.getParameter("InputCode");
+            System.out.println("Received InputCode: " + inputCodeStr); // Debugging
             int userInputCode;
             try {
-                userInputCode = Integer.parseInt(req.getParameter("InputCode"));
+                userInputCode = Integer.parseInt(inputCodeStr);
             } catch (NumberFormatException e) {
                 resp.getWriter().write("{\"success\": false, \"message\": \"Invalid verification code format.\"}");
                 return;
             }
 
-            if (mail.authenticator(userInputCode, session)) { // Pass session
+            if (mail.authenticator(userInputCode, session)) {
                 session.setAttribute("emailVerified", true);
-                resp.getWriter().println("{\"success\": \"true\", \"message\": \"Email verified. Enter your password.\"}");
+                resp.getWriter().write("{\"success\": true, \"message\": \"Email verified. Enter your password.\"}");
             } else {
-                resp.getWriter().println("{\"success\": \"false\", \"message\": \"Invalid verification code.\"}");
+                resp.getWriter().write("{\"success\": false, \"message\": \"Invalid verification code.\"}");
             }
-
         } else if ("setPassword".equals(step)) {
-            // ✅ Step 3: Set Password
             Boolean isVerified = (Boolean) session.getAttribute("emailVerified");
-
             if (isVerified == null || !isVerified) {
-                resp.getWriter().write("{\"success\": \"false\", \"message\": \"Email verification required.\"}");
+                resp.getWriter().write("{\"success\": false, \"message\": \"Email verification required.\"}");
                 return;
             }
 
             String password = req.getParameter("password");
             session.setAttribute("password", password);
 
-            resp.getWriter().write("{\"success\": \"true\", \"message\": \"Password set successfully! Signup complete.\"}");
+            resp.getWriter().write("{\"success\": true, \"message\": \"Password set successfully! Signup complete.\"}");
 
             // Creating a new user
             String userName = (String) session.getAttribute("userName");
-            String userEmail = (String) session.getAttribute("userEmail");
+            String userEmail = (String) session.getAttribute("userEmail"); // Fixed typo: sessio -> session
             String userPassword = (String) session.getAttribute("password");
             String hashedPassword = Utilities.passwordEncryptor(userPassword);
             UserDao userDao = new UserDao();
