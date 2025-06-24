@@ -1,5 +1,7 @@
 package org.example.services;
 
+import jakarta.servlet.http.HttpSession;
+
 import static org.example.database.DataBaseConfig.createConnection;
 
 import java.sql.Connection;
@@ -9,12 +11,14 @@ import java.sql.SQLException;
 import java.util.Random;
 
 public class VerificationEmail {
-    int code = code(); // Generates a random verification code when the object is created
-
-    String from = System.getenv("EMAIL_USERNAME");  // Loads the sender's email from the environment variables
+    // Removed the instance-level code variable
+    String from = System.getenv("EMAIL_USERNAME");  // Loads the sender's email from environment variables
 
     // Method to send the verification email to the user
-    public boolean sendEmail(String mail, String userName) {
+    public boolean sendEmail(String mail, String userName, HttpSession session) {
+        int code = code(); // Generate a new code for each email
+        session.setAttribute("verificationCode", code); // Store code in session
+
         String subject = "Verification E-Mail";
         String message = "Dear " + userName +
                 ",\n\nWelcome to IRCTC Ticket Booking App! To complete your sign-up process, we just need to verify your email address. Here is your verification code: **" +
@@ -29,7 +33,7 @@ public class VerificationEmail {
         boolean success = emailSender.sendEmail(mail, subject, message, null);
 
         if (success) {
-            System.out.println("Verification email sent successfully!");
+            System.out.println("Verification email sent successfully with code: " + code);
         } else {
             System.err.println("Error: We couldn't send the verification email. Please check your email settings and try again.");
         }
@@ -71,9 +75,18 @@ public class VerificationEmail {
         return 1000 + random.nextInt(9000); // 1000-9999
     }
 
-    // Check if user input matches generated code
-    public boolean authenticator(int userInput) {
-        return userInput == code;
+    // Check if user input matches the code stored in session
+    public boolean authenticator(int userInput, HttpSession session) {
+        Integer storedCode = (Integer) session.getAttribute("verificationCode");
+        if (storedCode == null) {
+            System.err.println("No verification code found in session!");
+            return false;
+        }
+        boolean isValid = userInput == storedCode;
+        if (isValid) {
+            session.removeAttribute("verificationCode"); // Clear code after successful verification
+        }
+        return isValid;
     }
 
     // Check if email is available (not used by any user)
@@ -91,7 +104,6 @@ public class VerificationEmail {
                 }
             }
         } catch (SQLException e) {
-
             System.out.println("An error occurred while checking email availability. Please contact support or try again later.");
         }
         return false;
