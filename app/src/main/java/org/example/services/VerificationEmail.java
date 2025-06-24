@@ -78,13 +78,14 @@ public class VerificationEmail {
     // Check if user input matches the code stored in session
     public boolean authenticator(int userInput, HttpSession session) {
         Integer storedCode = (Integer) session.getAttribute("verificationCode");
+        System.out.println("Retrieved OTP: " + storedCode + ", User Input: " + userInput + ", Session ID: " + session.getId());
         if (storedCode == null) {
             System.err.println("No verification code found in session!");
             return false;
         }
         boolean isValid = userInput == storedCode;
         if (isValid) {
-            session.removeAttribute("verificationCode"); // Clear code after successful verification
+            session.removeAttribute("verificationCode");
         }
         return isValid;
     }
