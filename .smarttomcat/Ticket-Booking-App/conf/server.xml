@@ -76,9 +76,6 @@
          AJP  Connector: /docs/config/ajp.html
          Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
     -->
-        
-    <Connector connectionTimeout="20000" port="8080" protocol="HTTP/1.1"/>
-        
     <!-- A "Connector" using the shared thread pool-->
         
     <!--
@@ -125,7 +122,14 @@
     <!-- You should set jvmRoute to support load-balancing via AJP ie :
     <Engine name="Catalina" defaultHost="localhost" jvmRoute="jvm1">
     -->
-        
+
+    <Connector port="8080"
+               protocol="HTTP/1.1"
+               proxyPort="443"
+               proxyName="irctc-ticket-booking-app.onrender.com"
+               scheme="https"
+               secure="true" />
+
     <Engine defaultHost="localhost" name="Catalina">
             
       <!--For clustering, please take a look at documentation at:
