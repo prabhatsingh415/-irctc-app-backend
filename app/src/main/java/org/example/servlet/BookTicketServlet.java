@@ -16,22 +16,30 @@ public class BookTicketServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        HttpSession session = req.getSession(false); // false so it doesn't create a new session
+        HttpSession session = req.getSession(false); // No new session
 
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
-        if (session == null || session.getAttribute("userEmail") == null) {
+        // Check if user is logged in
+        if (session == null || session.getAttribute("userEmail") == null || session.getAttribute("isAuthenticated") == null) {
             resp.getWriter().write("{\"success\": false, \"message\": \"User not logged in. Please login first.\"}");
             return;
         }
 
-        String step = req.getParameter("step");  // Step to determine the stage of input
+        String step = req.getParameter("step"); // Step to determine the stage of input
         String jsonResponse;
 
         if ("trainId".equals(step)) {
             // Step 1: Validate Train ID
-            int trainId = Integer.parseInt(req.getParameter("trainId"));
+            int trainId;
+            try {
+                trainId = Integer.parseInt(req.getParameter("trainId"));
+            } catch (NumberFormatException e) {
+                jsonResponse = "{\"success\": false, \"message\": \"Invalid Train ID format.\"}";
+                resp.getWriter().write(jsonResponse);
+                return;
+            }
 
             if (trainServices.isTrainIdValid(trainId)) {
                 session.setAttribute("trainId", trainId);
@@ -70,13 +78,16 @@ public class BookTicketServlet extends HttpServlet {
                 return;
             }
 
-            String email = (String) session.getAttribute("userEmail"); // Assuming email is stored in session
+            String email = (String) session.getAttribute("userEmail");
             int trainId = (int) session.getAttribute("trainId");
             String dateOfTravel = (String) session.getAttribute("dateOfTravel");
 
-            ticketServices.bookTicket(trainId, source, destination, dateOfTravel, name, email);
-
-            jsonResponse = "{\"success\": true, \"message\": \"Ticket booked successfully and sent to your email!\"}";
+            try {
+                ticketServices.bookTicket(trainId, source, destination, dateOfTravel, name, email);
+                jsonResponse = "{\"success\": true, \"message\": \"Ticket booked successfully and sent to your email!\"}";
+            } catch (Exception e) {
+                jsonResponse = "{\"success\": false, \"message\": \"Error booking ticket. Please try again.\"}";
+            }
             resp.getWriter().write(jsonResponse);
         }
     }

@@ -67,7 +67,7 @@
     </servlet-mapping>
 
     <session-config>
-        <session-timeout>30</session-timeout> <!-- 30 minutes -->
+        <session-timeout>43200</session-timeout> <!-- 30 minutes -->
     </session-config>
 
     <filter>
