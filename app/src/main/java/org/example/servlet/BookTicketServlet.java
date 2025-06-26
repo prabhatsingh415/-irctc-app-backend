@@ -86,6 +86,8 @@ public class BookTicketServlet extends HttpServlet {
                 ticketServices.bookTicket(trainId, source, destination, dateOfTravel, name, email);
                 jsonResponse = "{\"success\": true, \"message\": \"Ticket booked successfully and sent to your email!\"}";
             } catch (Exception e) {
+                System.out.println(e.getMessage());
+                e.printStackTrace();
                 jsonResponse = "{\"success\": false, \"message\": \"Error booking ticket. Please try again.\"}";
             }
             resp.getWriter().write(jsonResponse);
