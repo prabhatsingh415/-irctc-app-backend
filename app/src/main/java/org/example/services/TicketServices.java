@@ -58,9 +58,6 @@ public class TicketServices {
 
                 psUpdate.setInt(1, trainId);
                 psUpdate.executeUpdate();
-
-                System.out.println("Ticket booked successfully!");
-
                 // Generate and send ticket email
                 TicketGenerator ticket = new TicketGenerator();
                 String path = ticket.printTicket(ticketID, trainId, trainType, arrivalTime, departureTime, name, arrival, destination, sqlTravelDate);
@@ -76,6 +73,7 @@ public class TicketServices {
 
         } catch (SQLException | ParseException e) {
             System.err.println("Error booking ticket: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
