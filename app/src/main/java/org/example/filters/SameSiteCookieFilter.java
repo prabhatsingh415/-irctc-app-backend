@@ -22,7 +22,7 @@ public class SameSiteCookieFilter implements Filter {
                 String cookie = "JSESSIONID=" + sessionId +
                         "; Path=" + contextPath +
                         "; HttpOnly; Secure; SameSite=None; Max-Age=2592000"; // 30 days
-                response.setHeader("Set-Cookie", cookie);
+                response.addHeader("Set-Cookie", cookie);
             }
         }
     }
