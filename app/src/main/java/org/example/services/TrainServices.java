@@ -147,10 +147,36 @@ public class TrainServices {
                 stationList.add(rs.getString(1));
             }
         } catch (SQLException e) {
-
+              e.printStackTrace();
         }
     }
 
+    public List<String> getStationsForTrain(int trainId) {
+        List<String> stations = new ArrayList<>();
+        String query = "SELECT SourceStations, DestinationStation FROM traindetails WHERE TrainId = ?";
+
+        try (Connection conn = createConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, trainId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                String source = rs.getString("SourceStations");
+                String dest = rs.getString("DestinationStation");
+
+                if (source != null && !source.isEmpty() && !stations.contains(source)) {
+                    stations.add(source);
+                }
+                if (dest != null && !dest.isEmpty() && !stations.contains(dest)) {
+                    stations.add(dest);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return stations;
+    }
 
     public static List<String> getStationList() {
         return new ArrayList<>(stationList); // return copy for safety

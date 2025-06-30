@@ -9,6 +9,7 @@ import org.example.services.TicketServices;
 import org.example.services.TrainServices;
 
 import java.io.IOException;
+import java.util.List;
 
 public class BookTicketServlet extends HttpServlet {
     private final TrainServices trainServices = new TrainServices();
@@ -43,7 +44,16 @@ public class BookTicketServlet extends HttpServlet {
 
             if (trainServices.isTrainIdValid(trainId)) {
                 session.setAttribute("trainId", trainId);
-                jsonResponse = "{\"success\": true, \"message\": \"Train ID validated. Please enter the travel date.\"}";
+
+                List<String> stations = trainServices.getStationsForTrain(trainId);
+
+                // Convert to JSON array string
+                String stationsJson = new com.google.gson.Gson().toJson(stations);
+
+                jsonResponse = "{\"success\": true, " +
+                        "\"message\": \"Train ID validated. Please enter the travel date.\"," +
+                        "\"stations\": " + stationsJson + "}";
+
             } else {
                 jsonResponse = "{\"success\": false, \"message\": \"Invalid Train ID. Please enter a valid Train ID.\"}";
             }
