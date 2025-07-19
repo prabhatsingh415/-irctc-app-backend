@@ -1,8 +1,16 @@
-# IRCTC App Backend
+# 🚉 IRCTC App Backend
 
 ## 🚀 Project Overview
 
-This repository contains the backend implementation for an IRCTC clone, designed to handle core railway ticketing operations. Built using Java, Servlets, and JDBC, it provides a robust API for user management, train search, ticket booking, and cancellation.
+This repository contains the **backend implementation** for an **IRCTC clone**, designed to handle core railway ticketing operations. Built using **Java Servlets** and **JDBC**, it powers essential APIs for **user management**, **train search**, **ticket booking**, and **cancellation**.
+
+🖥️ **Live Demo (Frontend)**:  
+👉 [https://irctc-rose.vercel.app](https://irctc-rose.vercel.app)
+
+🗂️ **Frontend GitHub Repo**:  
+👉 [https://github.com/prabhatsingh415/IRCTC](https://github.com/prabhatsingh415/IRCTC)
+
+---
 
 ## 🛠 Tech Stack
 
@@ -11,31 +19,71 @@ This repository contains the backend implementation for an IRCTC clone, designed
 - **JDBC (MySQL)**
 - **Apache Tomcat**
 
+---
+
 ## 🔗 Main Features
 
-- **User Login & Registration**: Secure authentication using hashed passwords (BCrypt).
-- **Train Search**: Find available trains based on source and destination.
-- **Ticket Booking**: Book tickets, generate ticket files, and automatically email tickets to users.
-- **Ticket Cancellation**: Cancel tickets and update seat availability.
-- **Automatic Ticket File Deletion**: Ticket files are scheduled to be deleted 2 days after creation for security and cleanup.
+- 🔐 **User Login & Registration** — secure auth using hashed passwords (BCrypt)
+- 🚆 **Train Search** — find trains by source/destination
+- 🎫 **Ticket Booking** — book tickets, auto-email ticket file 
+- ❌ **Ticket Cancellation** — cancel and update seats
+- 🧹 **Auto Ticket File Deletion** — tickets deleted 2 days after generation
+
+---
+
+## 🌐 How to Use (Live Demo)
+
+Try the project live: 👉 [https://irctc-rose.vercel.app](https://irctc-rose.vercel.app)
+
+### 🧭 Steps to Use
+
+1. **Search Trains**
+   - Go to **Search Train** page.
+   - Enter source and destination to get available trains and their **Train IDs**.
+   - 📌 Popular sample searches:
+     | From     | To        |
+     |----------|-----------|
+     | Kota     | Ajmer     |
+     | Kota     | Jaipur    |
+     | Kota     | Jodhpur   |
+     | Kota     | Delhi     |
+     | Delhi    | Mumbai    |
+     | Delhi    | Kanpur    |
+
+2. **Book Tickets**
+   - Use the **Train ID** from above to proceed.
+   - Login / Sign up using a **valid email** (ticket will be sent to this).
+   - Enter the Train ID, then fill in passenger details.
+   - On success, a ticket is automatically sent to your email.
+
+3. **Cancel Tickets**
+   - Go to **Cancel Ticket** page.
+   - Enter your **Ticket ID** (found in the confirmation email).
+   - If valid, your ticket will be canceled and seat updated.
+
+---
 
 ## 📦 Project Structure
 
-```
-app/
-├── src/
-│   └── main/
-│       ├── java/
-│       │   └── org/
-│       │       └── example/
-│       │           ├── App.java                # Tomcat server initialization
-│       │           ├── entities/User.java      # User entity
-│       │           ├── services/TicketServices.java # Booking/cancellation logic
-│       │           └── utilities/Utilities.java     # Helper functions
-│       └── webapp/
-│           ├── index.html
-│           └── hello.html
-```
+<pre> 
+  app/
+    ├── src/
+    │   └── main/
+    │       ├── java/
+    │       │   └── org/
+    │       │       └── example/
+    │       │           ├── App.java                     # Tomcat server initialization
+    │       │           ├── entities/
+    │       │           │   └── User.java                # User entity
+    │       │           ├── services/
+    │       │           │   └── TicketServices.java      # Booking/cancellation logic
+    │       │           └── utilities/
+    │       │               └── Utilities.java           # Helper functions
+    │       └── webapp/
+ </pre>
+
+
+---
 
 ## 📥 Setup & Installation
 
@@ -45,35 +93,42 @@ app/
     cd -irctc-app-backend
     ```
 
-2. **Configure Database**
-   - Set up your MySQL database and update the JDBC connection details in the code.
+2. **Configure MySQL Database**
+   - Create the required tables and update JDBC details in code.
 
-3. **Build the project**
-   - Use your preferred Java build tool (e.g., Gradle or Maven) to build the project.
+3. **Build the Project**
+   - Use Maven or Gradle to compile and package.
 
-4. **Deploy on Apache Tomcat**
-   - Ensure Tomcat is installed.
-   - Deploy the built `.war` or configure using the provided `App.java` as an embedded server.
+4. **Deploy to Apache Tomcat**
+   - Deploy `.war` file or run via embedded Jetty/Tomcat using `App.java`.
 
-5. **Access the Application**
-   - Go to `http://localhost:8080/yourappname` in your browser.
-
-## 🧑‍💻 Usage
-
-- Register a user and log in.
-- Search for trains using the web interface.
-- Book tickets; receive ticket confirmation via email.
-- Cancel tickets if needed.
-
-## 🔒 Security
-
-- Passwords are encrypted using BCrypt for secure authentication.
-- Ticket files are automatically deleted after 2 days to prevent misuse.
-
-## 📝 Author
-
-**Prabhat Singh**
+5. **Run Locally**
+   - Navigate to: `http://localhost:8080/yourappname`
 
 ---
 
-> For queries or contributions, please open an issue or submit a pull request.
+## 🧑‍💻 Usage Flow Summary
+
+- 🔐 Sign up or log in using a valid email.
+- 🔎 Search trains using source & destination.
+- 🎟️ Book a ticket using train ID → Ticket sent via email.
+- ❌ Cancel ticket using ticket ID.
+
+---
+
+## 🔒 Security Highlights
+
+- ✅ **Password Encryption** — using BCrypt hashing.
+- 🧼 **Auto-Cleanup** — ticket are auto-deleted 48 hours after booking.
+- 🔐 **Session Management** — Servlet-based login system.
+
+---
+
+## 👤 Author
+
+**Prabhat Singh**  
+💼 [GitHub Profile](https://github.com/prabhatsingh415)  
+
+---
+
+> 💬 For queries, feedback, or contributions, feel free to [open an issue](https://github.com/prabhatsingh415/-irctc-app-backend/issues) or submit a pull request.
