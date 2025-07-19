@@ -7,7 +7,6 @@ app/.env
 .idea/
 *.iml
 
-
 # Ignore build output
 /out/
 /target/
