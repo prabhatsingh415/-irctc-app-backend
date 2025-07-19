@@ -47,9 +47,11 @@ java {
 // ✅ Add WAR Configuration
 war {
     archiveFileName = "IRCTC-1.0.war"
-    destinationDirectory.set(layout.buildDirectory.dir("libs"))// This will make it output in build/libs
-    exclude '.env'
-    exclude '**/*.env' // Excludes any .env files in subdirectories
+    destinationDirectory.set(layout.buildDirectory.dir("libs"))
+    from('src/main/resources') {
+        exclude '.env'
+        exclude '**/*.env'
+    }
 }
 
 
