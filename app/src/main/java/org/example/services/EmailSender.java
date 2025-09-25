@@ -64,11 +64,13 @@ public class EmailSender {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
+            String responseBody = (response.body() != null) ? response.body().string() : "No response body";
+
             if (response.isSuccessful()) {
-                log.info("Email sent successfully to {}", toEmail);
+                log.info("Brevo API success: {} - {}", response.code(), responseBody);
                 return true;
             } else {
-                log.error("Brevo API error: {} {}", response.code(), response.message());
+                log.error("Brevo API error: {} {} - {}", response.code(), response.message(), responseBody);
                 return false;
             }
         } catch (IOException e) {
