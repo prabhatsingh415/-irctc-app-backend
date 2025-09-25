@@ -55,7 +55,7 @@ public class EmailSender {
         json.addProperty("subject", subject);
         json.addProperty("textContent", message);
 
-        // --- Attachment handling ---
+
         if (filePath != null && !filePath.trim().isEmpty()) {
             try {
                 byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
@@ -67,7 +67,8 @@ public class EmailSender {
 
                 JsonArray attachments = new JsonArray();
                 attachments.add(attachment);
-                json.add("attachment", attachments);
+
+                json.add("attachments", attachments);
 
                 log.info("Attachment added: {}", filePath);
             } catch (IOException e) {
