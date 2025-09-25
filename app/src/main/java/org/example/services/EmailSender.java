@@ -2,12 +2,14 @@ package org.example.services;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 
@@ -55,24 +57,31 @@ public class EmailSender {
         json.addProperty("subject", subject);
         json.addProperty("textContent", message);
 
-
         if (filePath != null && !filePath.trim().isEmpty()) {
             try {
-                byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
+                Path path = Paths.get(filePath);
+                if (!Files.exists(path) || !Files.isReadable(path)) {
+                    log.error("File does not exist or is not readable: {}", filePath);
+                    return false;
+                }
+                byte[] fileBytes = Files.readAllBytes(path);
                 String base64File = Base64.getEncoder().encodeToString(fileBytes);
+                log.info("Attachment file: {}, Base64 length: {}", path.getFileName(), base64File.length());
 
                 JsonObject attachment = new JsonObject();
                 attachment.addProperty("content", base64File);
-                attachment.addProperty("name", Paths.get(filePath).getFileName().toString());
+                // Sanitize filename to avoid issues
+                String fileName = path.getFileName().toString().replaceAll("[^a-zA-Z0-9.-]", "_");
+                attachment.addProperty("name", fileName);
 
                 JsonArray attachments = new JsonArray();
                 attachments.add(attachment);
 
-                json.add("attachments", attachments);
-
+                json.add("attachment", attachments);
                 log.info("Attachment added: {}", filePath);
             } catch (IOException e) {
                 log.error("Failed to read attachment file: {}", e.getMessage(), e);
+                return false;
             }
         }
 
@@ -96,6 +105,12 @@ public class EmailSender {
                 return true;
             } else {
                 log.error("Brevo API error: {} {} - {}", response.code(), response.message(), responseBody);
+                try {
+                    JsonObject errorResponse = JsonParser.parseString(responseBody).getAsJsonObject();
+                    log.error("Error details: {}", errorResponse.toString());
+                } catch (Exception e) {
+                    log.error("Failed to parse error response: {}", e.getMessage());
+                }
                 return false;
             }
         } catch (IOException e) {
