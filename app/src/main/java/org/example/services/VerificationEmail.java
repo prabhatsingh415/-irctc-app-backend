@@ -1,7 +1,6 @@
 package org.example.services;
 
 import jakarta.servlet.http.HttpSession;
-
 import static org.example.database.DataBaseConfig.createConnection;
 
 import java.sql.Connection;
@@ -11,11 +10,17 @@ import java.sql.SQLException;
 import java.util.Random;
 
 public class VerificationEmail {
-    // Removed the instance-level code variable
-    String from = System.getenv("EMAIL_USERNAME");  // Loads the sender's email from environment variables
+    private final String from;
+
+    public VerificationEmail() {
+        this.from = System.getenv("EMAIL_USERNAME"); // Loads the sender's email from environment variables
+        if (this.from == null) {
+            throw new RuntimeException("EMAIL_USERNAME not found! Please check your environment variables.");
+        }
+    }
 
     // Method to send the verification email to the user
-    public boolean sendEmail(String mail, String userName, HttpSession session) {
+    public boolean sendEmail(String toEmail, String userName, HttpSession session) {
         int code = code(); // Generate a new code for each email
         session.setAttribute("verificationCode", code); // Store code in session
 
@@ -27,44 +32,39 @@ public class VerificationEmail {
                 "Thank you for joining us!\n" +
                 "Best regards,\n" +
                 "The IRCTC - Ticket Booking App Team\n" +
-                "Email :- singh.prabhat.work@gmail.com\n";
+                "Email: singh.prabhat.work@gmail.com\n";
 
         EmailSender emailSender = new EmailSender(from);
-        boolean success = emailSender.sendEmail(mail, subject, message, null);
+        boolean success = emailSender.sendEmail(userName, toEmail, subject, message, null);
 
         if (success) {
             System.out.println("Verification email sent successfully with code: " + code);
         } else {
-            System.err.println("Error: We couldn't send the verification email. Please check your email settings and try again.");
+            System.err.println("Error: Failed to send verification email to " + toEmail + ". Please check your email settings and try again.");
         }
         return success;
     }
 
     // Method to send the ticket confirmation email with attachment
-    public boolean sendTicket(String mail, String user, String path) {
+    public boolean sendTicket(String toEmail, String userName, String filePath) {
         String subject = "Your Ticket Confirmation";
-        String message = "Dear " + user +
-                "\n" +
-                "Thank you for choosing our services. Please find your ticket details below:\n" +
-                "\n" +
-                "Your ticket is attached to this email. Kindly carry a printout or an electronic copy of it during your journey.\n" +
-                "\n" +
-                "If you have any questions or require further assistance, feel free to reach out to us.\n" +
-                "\n" +
-                "Safe travels!\n" +
-                "\n" +
+        String message = "Dear " + userName + ",\n\n" +
+                "Thank you for choosing our services. Please find your ticket details below:\n\n" +
+                "Your ticket is attached to this email. Kindly carry a printout or an electronic copy of it during your journey.\n\n" +
+                "If you have any questions or require further assistance, feel free to reach out to us.\n\n" +
+                "Safe travels!\n\n" +
                 "Best regards,\n" +
                 "Prabhat Singh\n" +
-                "contact :- singh.prabhat.work@gmail.com\n" +
-                "IRCTC-TICKET_BOOKING_APP\n";
+                "Contact: singh.prabhat.work@gmail.com\n" +
+                "IRCTC - Ticket Booking App\n";
 
         EmailSender emailSender = new EmailSender(from);
-        boolean success = emailSender.sendEmail(mail, subject, message, path);
+        boolean success = emailSender.sendEmail(userName, toEmail, subject, message, filePath);
 
         if (success) {
-            System.out.println("Ticket confirmation email sent successfully!");
+            System.out.println("Ticket confirmation email sent successfully to " + toEmail);
         } else {
-            System.err.println("Error: We couldn't send the ticket confirmation email. Please try again.");
+            System.err.println("Error: Failed to send ticket confirmation email to " + toEmail + ". Please verify the file path and try again.");
         }
         return success;
     }
@@ -78,34 +78,34 @@ public class VerificationEmail {
     // Check if user input matches the code stored in session
     public boolean authenticator(int userInput, HttpSession session) {
         Integer storedCode = (Integer) session.getAttribute("verificationCode");
-        System.out.println("Retrieved OTP: " + storedCode + ", User Input: " + userInput + ", Session ID: " + session.getId());
         if (storedCode == null) {
-            System.err.println("No verification code found in session!");
+            System.err.println("No verification code found in session for session ID: " + session.getId());
             return false;
         }
         boolean isValid = userInput == storedCode;
+        System.out.println("Retrieved OTP: " + storedCode + ", User Input: " + userInput + ", Session ID: " + session.getId() + ", Valid: " + isValid);
         if (isValid) {
-            session.removeAttribute("verificationCode");
+            session.removeAttribute("verificationCode"); // Clean up session
         }
         return isValid;
     }
 
-    // Check if email is available (not used by any user)
+    // Check if email is available
     public boolean isEmailAvailable(String email) {
         String query = "SELECT EXISTS (SELECT 1 FROM user WHERE userEMAIL = ?)";
-
         try (Connection connection = createConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, email);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    // Return true if email does NOT exist (available), false otherwise
-                    return !resultSet.getBoolean(1);
+                    boolean exists = resultSet.getBoolean(1);
+                    System.out.println("Email availability check for " + email + ": " + (exists ? "taken" : "available"));
+                    return !exists; // Return true if email does NOT exist (available)
                 }
             }
         } catch (SQLException e) {
-            System.out.println("An error occurred while checking email availability. Please contact support or try again later.");
+            System.err.println("SQL Error while checking email availability for " + email + ": " + e.getMessage());
+            return false; // Return false on error to prevent registration with unverified email
         }
         return false;
     }
