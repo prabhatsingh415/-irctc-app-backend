@@ -1,11 +1,15 @@
 package org.example.services;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Base64;
 
 public class EmailSender {
 
@@ -34,7 +38,6 @@ public class EmailSender {
 
         OkHttpClient client = new OkHttpClient();
 
-        // Build JSON payload
         JsonObject json = new JsonObject();
 
         JsonObject sender = new JsonObject();
@@ -45,11 +48,32 @@ public class EmailSender {
         JsonObject toRecipient = new JsonObject();
         toRecipient.addProperty("name", toName);
         toRecipient.addProperty("email", toEmail);
-        json.add("to", new com.google.gson.JsonArray());
-        json.getAsJsonArray("to").add(toRecipient);
+        JsonArray toArray = new JsonArray();
+        toArray.add(toRecipient);
+        json.add("to", toArray);
 
         json.addProperty("subject", subject);
         json.addProperty("textContent", message);
+
+        // --- Attachment handling ---
+        if (filePath != null && !filePath.trim().isEmpty()) {
+            try {
+                byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
+                String base64File = Base64.getEncoder().encodeToString(fileBytes);
+
+                JsonObject attachment = new JsonObject();
+                attachment.addProperty("content", base64File);
+                attachment.addProperty("name", Paths.get(filePath).getFileName().toString());
+
+                JsonArray attachments = new JsonArray();
+                attachments.add(attachment);
+                json.add("attachment", attachments);
+
+                log.info("Attachment added: {}", filePath);
+            } catch (IOException e) {
+                log.error("Failed to read attachment file: {}", e.getMessage(), e);
+            }
+        }
 
         RequestBody body = RequestBody.create(
                 json.toString(),
