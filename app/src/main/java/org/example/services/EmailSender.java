@@ -1,65 +1,56 @@
 package org.example.services;
 
-import com.sendgrid.*;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Attachments;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
+import com.mailersend.sdk.MailerSend;
+import com.mailersend.sdk.emails.Email;
+import com.mailersend.sdk.exceptions.MailerSendException;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
 
 public class EmailSender {
 
     private final String fromEmail;
-    private final String sendGridApiKey;
+    private final String mailerSendApiKey;
 
     public EmailSender(String fromEmail) {
         this.fromEmail = fromEmail;
-        this.sendGridApiKey = System.getenv("SENDGRID_API_KEY");
+        this.mailerSendApiKey = System.getenv("MAILERSEND_API_KEY");
 
-        if (this.sendGridApiKey == null) {
-            throw new RuntimeException("SENDGRID_API_KEY not found! Please check Render env variables.");
+        if (this.mailerSendApiKey == null) {
+            throw new RuntimeException("MAILERSEND_API_KEY not found! Please check your environment variables.");
         }
     }
 
-    public boolean sendEmail(String to, String subject, String message, String filePath) {
-        Email from = new Email(fromEmail);
-        Email recipient = new Email(to);
-        Content content = new Content("text/plain", message);
-        Mail mail = new Mail(from, subject, recipient, content);
-
-        if (filePath != null && !filePath.isEmpty()) {
-            try {
-                Path path = Paths.get(filePath);
-                byte[] fileData = Files.readAllBytes(path);
-                Attachments attachment = new Attachments();
-                attachment.setContent(Base64.getEncoder().encodeToString(fileData));
-                attachment.setType("application/octet-stream");
-                attachment.setFilename(path.getFileName().toString());
-                attachment.setDisposition("attachment");
-                mail.addAttachments(attachment);
-            } catch (IOException e) {
-                System.err.println("Failed to attach file: " + e.getMessage());
-            }
-        }
-
-        SendGrid sg = new SendGrid(sendGridApiKey);
-        Request request = new Request();
-
+    public boolean sendEmail(String toName, String toEmail, String subject, String message, String filePath) {
         try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
-            Response response = sg.api(request);
+            MailerSend mailerSend = new MailerSend();
+            mailerSend.setToken(mailerSendApiKey);
 
-            System.out.println("SendGrid Status Code: " + response.getStatusCode());
-            return response.getStatusCode() == 202;
-        } catch (IOException ex) {
-            System.err.println("SendGrid Error: " + ex.getMessage());
+            Email email = new Email();
+            email.setFrom("IRCTC Bot", fromEmail);
+
+            // Recipient
+            email.addRecipient(toName, toEmail);
+
+            // Subject & Message
+            email.setSubject(subject);
+            email.setPlain(message);
+
+            // Reply-To
+            email.AddReplyTo("IRCTC Support", fromEmail);
+
+            // Attachment
+            if (filePath != null && !filePath.isEmpty()) {
+                email.attachFile(Paths.get(filePath).toString());
+            }
+
+            // Send Email
+            mailerSend.emails().send(email);
+            System.out.println("Email sent successfully!");
+            return true;
+
+        } catch (MailerSendException | IOException e) {
+            System.err.println("Error: " + e.getMessage());
             return false;
         }
     }

@@ -17,13 +17,13 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0' // Updated to 6.1.0 for Tomcat 11 compatibility; use compileOnly to avoid runtime conflicts
 
-    implementation 'com.google.guava:guava:32.1.2-jre' // Replace with the desired Guava version
-
-    implementation 'com.sun.mail:jakarta.mail:2.0.1' // Ensure you're using the latest version
-    implementation 'jakarta.activation:jakarta.activation-api:1.2.2' // Ensure compatibility
+    implementation 'com.google.guava:guava:32.1.2-jre'
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+    implementation 'jakarta.activation:jakarta.activation-api:1.2.2'
     implementation 'mysql:mysql-connector-java:8.0.28'
-    implementation group: 'io.github.cdimascio', name: 'dotenv-java', version: '3.0.2'
+    implementation 'io.github.cdimascio:dotenv-java:3.0.2'
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.5'
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:11.0.5'
@@ -31,12 +31,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.zaxxer:HikariCP:6.3.0'
     implementation 'org.slf4j:slf4j-simple:1.7.36'
-    implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
     implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:11.0.5'
     testImplementation 'org.mockito:mockito-core:5.11.0'
     testImplementation 'junit:junit:4.13.2'
-    implementation 'com.sendgrid:sendgrid-java:4.9.3'
-
+    implementation 'com.mailersend:java-sdk:1.4.1'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
