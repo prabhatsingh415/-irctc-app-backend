@@ -3,12 +3,16 @@ package org.example.services;
 import com.mailersend.sdk.MailerSend;
 import com.mailersend.sdk.emails.Email;
 import com.mailersend.sdk.exceptions.MailerSendException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 
+
 public class EmailSender {
 
+    private static final Logger log = LoggerFactory.getLogger(EmailSender.class);
     private final String fromEmail;
     private final String mailerSendApiKey;
 
@@ -25,6 +29,10 @@ public class EmailSender {
         try {
             MailerSend mailerSend = new MailerSend();
             mailerSend.setToken(mailerSendApiKey);
+
+            if(mailerSendApiKey==null){
+                log.info("token not found !");
+            }
 
             Email email = new Email();
             email.setFrom("IRCTC Bot", fromEmail);
@@ -50,7 +58,7 @@ public class EmailSender {
             return true;
 
         } catch (MailerSendException | IOException e) {
-            System.err.println("Error: " + e.getMessage());
+            log.error("Error: {}", e.getMessage());
             return false;
         }
     }
