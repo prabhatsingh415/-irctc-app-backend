@@ -38,7 +38,7 @@ public class EmailSender {
         JsonObject json = new JsonObject();
 
         JsonObject sender = new JsonObject();
-        sender.addProperty("name", "IRCTC Bot");
+        sender.addProperty("name", "IRCTC");
         sender.addProperty("email", fromEmail);
         json.add("sender", sender);
 
